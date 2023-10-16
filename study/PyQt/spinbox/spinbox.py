@@ -29,7 +29,8 @@ class WindowClass(QMainWindow, from_class):
         self.pixmap = QPixmap()
         self.pixmap.load('cat.png')
 
-        self.labelPixmap.setPixmap(self.pixmap)
+        self.label_5.setPixmap(self.pixmap)
+        self.label_5.resize(self.pixmap.width(), self.pixmap.height())
 
     def apply(self):
         min = self.lineEdit.text()
