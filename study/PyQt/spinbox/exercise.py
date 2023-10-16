@@ -24,6 +24,7 @@ class WindowClass(QMainWindow, from_class):
 
         self.pushButton.clicked.connect(self.apply)
         self.pushButton_2.clicked.connect(self.savefile)
+        self.pushButton_3.clicked.connect(self.openfile)
 
         self.spinBox.valueChanged.connect(self.changeSpinbox)
         self.horizontalSlider.valueChanged.connect(self.changeSlider)
@@ -63,11 +64,16 @@ class WindowClass(QMainWindow, from_class):
         path_name = QFileDialog.getSaveFileName(self, 'save file', './')
         
         if path_name[0]:
-                self.pixmap.save(path_name)
-                print("file save : ", path_name)
+            self.pixmap.save(path_name[0])
+            print("file save : ", path_name)
                 
     def openfile(self):
-        name = QFileDialog.getSaveFileName(self, 'ope', './dog.png')
+        path_name = QFileDialog.getOpenFileName(self, 'open file', './')
+        print(path_name)
+        if path_name[0]:
+            self.pixmap.load(path_name[0])
+            self.pixmap = self.pixmap.scaled(self.label_5.width(), self.label_5.height())
+            self.label_5.setPixmap(self.pixmap)                
     
        
 if __name__ == "__main__":
