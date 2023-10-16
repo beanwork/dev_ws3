@@ -29,6 +29,10 @@ class WindowClass(QMainWindow, from_class):
 
         self.spinBox.setRange(int(min), int(max))
         self.spinBox.setSingleStep(int(step))
+    
+    def change(self):
+        actualValue = self.spinBox.value()
+        self.label_4.setText(str(actualValue))
        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
