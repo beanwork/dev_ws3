@@ -21,6 +21,7 @@ class WindowClass(QMainWindow, from_class):
 
         self.comboBox.setCurrentText(str(1990))
         self.comboBox_3.currentIndexChanged.connect(self.printBirthday)
+        self.calendarWidget.clicked.connect(self.selectDate)
     
     def printBirthday(self):
         year = self.comboBox.currentText()
@@ -28,6 +29,18 @@ class WindowClass(QMainWindow, from_class):
         day = self.comboBox_3.currentText()
 
         self.lineEdit.setText(year+month.zfill(2)+day.zfill(2))
+    
+    def selectDate(self):
+        date = self.calendarWidget.selectedDate()
+        year = date.toString('yyyy')
+        month = date.toString('M')
+        day = date.toString('d')
+
+        self.comboBox.setCurrentText(year)
+        self.comboBox_2.setCurrentText(month)
+        self.comboBox_3.setCurrentText(day)
+
+        self.lineEdit.setText(year + month.zfill(2) + day.zfill(2))    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
