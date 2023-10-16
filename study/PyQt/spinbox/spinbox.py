@@ -19,6 +19,9 @@ class WindowClass(QMainWindow, from_class):
         self.lineEdit_2.setText(str(max))
         self.lineEdit_3.setText(str(step))
 
+        self.horizontalSlider.setRange(min, max)
+        self.horizontalSlider.setSingleStep(step)
+
         self.pushButton.clicked.connect(self.apply)
         self.spinBox.valueChanged.connect(self.change)
 
@@ -29,6 +32,9 @@ class WindowClass(QMainWindow, from_class):
 
         self.spinBox.setRange(int(min), int(max))
         self.spinBox.setSingleStep(int(step))
+
+        self.horizontalSlider.setRange(int(min), int(max))
+        self.horizontalSlider.setSingleStep(int(step))
     
     def change(self):
         actualValue = self.spinBox.value()
