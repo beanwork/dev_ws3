@@ -26,6 +26,11 @@ class WindowClass(QMainWindow, from_class):
         self.spinBox.valueChanged.connect(self.changeSpinbox)
         self.horizontalSlider.valueChanged.connect(self.changeSlider)
 
+        self.pixmap = QPixmap()
+        self.pixmap.load('cat.png')
+
+        self.labelPixmap.setPixmap(self.pixmap)
+
     def apply(self):
         min = self.lineEdit.text()
         max = self.lineEdit_2.text()
