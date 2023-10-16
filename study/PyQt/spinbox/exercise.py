@@ -60,7 +60,7 @@ class WindowClass(QMainWindow, from_class):
 
     def savefile(self):
         
-        path_name = QFileDialog.getSaveFileName(self, 'open file', '~/')
+        path_name = QFileDialog.getSaveFileName(self, 'save file', './')
         
         if path_name[0]:
                 self.pixmap.save(path_name)
