@@ -23,7 +23,8 @@ class WindowClass(QMainWindow, from_class):
         self.horizontalSlider.setSingleStep(step)
 
         self.pushButton.clicked.connect(self.apply)
-        self.spinBox.valueChanged.connect(self.change)
+        self.spinBox.valueChanged.connect(self.changeSpinbox)
+        self.horizontalSlider.valueChanged.connect(self.changeSlider)
 
     def apply(self):
         min = self.lineEdit.text()
@@ -36,9 +37,16 @@ class WindowClass(QMainWindow, from_class):
         self.horizontalSlider.setRange(int(min), int(max))
         self.horizontalSlider.setSingleStep(int(step))
     
-    def change(self):
+    def changeSlider(self):
+        actualValue = self.horizontalSlider.value()
+        self.label_4.setText(str(actualValue))
+        self.spinBox.setValue(actualValue)
+
+    def changeSpinbox(self):
         actualValue = self.spinBox.value()
         self.label_4.setText(str(actualValue))
+        self.horizontalSlider.setValue(actualValue)
+    
        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
