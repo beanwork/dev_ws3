@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QSlider" name="height">
+  <widget class="QSlider" name="height_bar">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -71,7 +71,7 @@
     <string>open</string>
    </property>
   </widget>
-  <widget class="QSlider" name="width">
+  <widget class="QSlider" name="width_bar">
    <property name="geometry">
     <rect>
      <x>80</x>
