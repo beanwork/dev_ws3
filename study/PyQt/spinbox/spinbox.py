@@ -1,5 +1,5 @@
 import sys
-import mysql.connector
+import urllib.request
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import uic
@@ -26,11 +26,14 @@ class WindowClass(QMainWindow, from_class):
         self.spinBox.valueChanged.connect(self.changeSpinbox)
         self.horizontalSlider.valueChanged.connect(self.changeSlider)
 
-        self.pixmap = QPixmap()
-        self.pixmap.load('cat.png')
+        url = 'https://imageio.forbes.com/specials-images/imageserve/61b1f75e9bdd78e1c08fdd64/A-funny-labrador-dog-with-a-curiously-placed-bubble-in-its-behind-/0x0.jpg?format=jpg&crop=922,956,x0,y279,safe&width=1440'
+        image = urllib.request.urlopen(url).read()
 
+        self.pixmap = QPixmap()
+        self.pixmap.loadFromData(image)
+
+        self.pixmap = self.pixmap.scaled(self.label_5.width(), self.label_5.height())
         self.label_5.setPixmap(self.pixmap)
-        self.label_5.resize(self.pixmap.width(), self.pixmap.height())
 
     def apply(self):
         min = self.lineEdit.text()
