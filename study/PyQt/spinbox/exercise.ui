@@ -13,124 +13,11 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QSlider" name="height">
    <property name="geometry">
     <rect>
-     <x>530</x>
-     <y>90</y>
-     <width>131</width>
-     <height>111</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Apply</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>100</y>
-     <width>67</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Min</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>100</y>
-     <width>113</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="inputMethodHints">
-    <set>Qt::ImhDigitsOnly</set>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>150</y>
-     <width>113</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="inputMethodHints">
-    <set>Qt::ImhDigitsOnly</set>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>160</y>
-     <width>67</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Max</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_3">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
+     <x>80</x>
      <y>200</y>
-     <width>113</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="inputMethodHints">
-    <set>Qt::ImhDigitsOnly</set>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>210</y>
-     <width>67</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Step</string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="spinBox">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>100</y>
-     <width>201</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QSlider" name="horizontalSlider">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>310</y>
      <width>561</width>
      <height>16</height>
     </rect>
@@ -143,7 +30,7 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>350</y>
+     <y>300</y>
      <width>781</width>
      <height>371</height>
     </rect>
@@ -161,8 +48,8 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>660</x>
-     <y>90</y>
+     <x>90</x>
+     <y>60</y>
      <width>131</width>
      <height>111</height>
     </rect>
@@ -174,14 +61,53 @@
   <widget class="QPushButton" name="pushButton_3">
    <property name="geometry">
     <rect>
-     <x>790</x>
-     <y>90</y>
+     <x>220</x>
+     <y>60</y>
      <width>131</width>
      <height>111</height>
     </rect>
    </property>
    <property name="text">
     <string>open</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="width">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>240</y>
+     <width>561</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>200</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>height</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>240</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>width</string>
    </property>
   </widget>
  </widget>
