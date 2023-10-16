@@ -20,6 +20,7 @@ class WindowClass(QMainWindow, from_class):
         self.lineEdit_3.setText(str(step))
 
         self.pushButton.clicked.connect(self.apply)
+        self.spinBox.valueChanged.connect(self.change)
 
     def apply(self):
         min = self.lineEdit.text()
