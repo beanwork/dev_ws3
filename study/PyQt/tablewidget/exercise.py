@@ -1,5 +1,6 @@
 import sys
 import mysql.connector
+from datetime import datetime 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import uic
@@ -12,7 +13,7 @@ class WindowClass(QMainWindow, from_class):
         super().__init__()
         self.setupUi(self)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.pushButton.clicked.connect(self.show_table)
+        self.pushButton.clicked.connect(self.search)
 
         for sex in ["M", "F", "Others"]:
             self.comboBox.addItem(sex)
@@ -100,8 +101,8 @@ class WindowClass(QMainWindow, from_class):
         return final_query
 
 
-    def show_table(self):
-
+    def search(self):
+        self.set_birth()
         final_query  = self.make_query(self.comboBox.currentText(), self.comboBox_2.currentText(), self.comboBox_3.currentText())
         if not final_query == None :
             self.pyqt_cur.execute("select * from celeb where " + final_query)
@@ -115,9 +116,24 @@ class WindowClass(QMainWindow, from_class):
                 self.tableWidget.insertRow(row)
                 for idx, info in enumerate(celeb_info):
                     self.tableWidget.setItem(row, idx, QTableWidgetItem(str(info)))
-        
-        
+                    print(type(self.dateEdit.text()))
     
+    def set_birth(self):
+        self.pyqt_cur.execute("Select min(birth) from celeb;")
+        min_birth = self.pyqt_cur.fetchall()[0]
+        
+        self.pyqt_cur.execute("select max(birth) from celeb;")
+        max_birth = self.pyqt_cur.fetchall()[0]
+
+        start_date = datetime.strptime(self.dateEdit.text(), '%Y%m%d').date()
+        end_date = datetime.strptime(self.dateEdit_2.text(), '%Y%m%d').date()
+
+        if start_date > end_date :
+            QMessageBox.information(self, "날짜 오류", "date에 오류가 있습니다.")
+            self.dateEdit.setText(str(min_birth))
+            self.dateEdit_2.setText(str(max_birth))
+   
+            
     def __del__(self):
         self.pyqt_con.close()
 
