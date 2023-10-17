@@ -96,27 +96,30 @@ class WindowClass(QMainWindow, from_class):
             final_query = sex_query 
 
         else:
-            final_query = None
+            final_query = ''
 
         return final_query
 
 
     def search(self):
-        self.set_birth()
+        
         final_query  = self.make_query(self.comboBox.currentText(), self.comboBox_2.currentText(), self.comboBox_3.currentText())
-        if not final_query == None :
-            self.pyqt_cur.execute("select * from celeb where " + final_query)
+        birth_query = self.set_birth
+
+        self.pyqt_cur.execute("select * from celeb where " + birth_query + final_query)
         self.pyqt_con.commit()
 
         pyqt_result = self.pyqt_cur.fetchall()
 
         if pyqt_result != None:
             self.tableWidget.setRowCount(0)
+
             for row, celeb_info in enumerate(pyqt_result):
                 self.tableWidget.insertRow(row)
+
                 for idx, info in enumerate(celeb_info):
                     self.tableWidget.setItem(row, idx, QTableWidgetItem(str(info)))
-                    print(type(self.dateEdit.text()))
+                    # print(type(self.dateEdit.text()))
     
     def set_birth(self):
         self.pyqt_cur.execute("Select min(birth) from celeb;")
@@ -130,10 +133,11 @@ class WindowClass(QMainWindow, from_class):
 
         if start_date > end_date :
             QMessageBox.information(self, "날짜 오류", "date에 오류가 있습니다.")
+
             self.dateEdit.setText(str(min_birth))
             self.dateEdit_2.setText(str(max_birth))
    
-            
+        return "(birth >= '{0}') and (birth <= '{1}') ".format(str(min_birth), str(max_birth))
     def __del__(self):
         self.pyqt_con.close()
 
