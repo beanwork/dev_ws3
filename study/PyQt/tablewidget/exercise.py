@@ -110,13 +110,13 @@ class WindowClass(QMainWindow, from_class):
         pyqt_result = self.pyqt_cur.fetchall()
 
         if pyqt_result != None:
-            for celeb_info in pyqt_result:
-                row = self.tableWidget.rowCount()
+            self.tableWidget.setRowCount(0)
+            for row, celeb_info in enumerate(pyqt_result):
                 self.tableWidget.insertRow(row)
                 for idx, info in enumerate(celeb_info):
                     self.tableWidget.setItem(row, idx, QTableWidgetItem(str(info)))
         
-        self.tableWidget.clear()
+        
     
     def __del__(self):
         self.pyqt_con.close()
