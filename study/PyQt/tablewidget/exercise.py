@@ -32,13 +32,13 @@ class WindowClass(QMainWindow, from_class):
         )
         self.pyqt_cur = self.pyqt_con.cursor(buffered=True)
 
-    def make_query(self, sex=None, jobtitle = None, agency = None):
+    def make_query(self, sex='', jobtitle='', agency=''):
         if sex == 'M':
             sex_query = 'sex = "M"'
         elif sex == 'F':
             sex_query = 'sex = "F"'
         else:
-            pass
+            sex_query = None
         
         if '가수' in jobtitle:
             job_query = 'job like "%가수%"'
@@ -53,7 +53,7 @@ class WindowClass(QMainWindow, from_class):
         elif '모델' in jobtitle:
             job_query = 'job like "%모델%"'
         else:
-            pass
+            job_query = None
         
         if 'EDAM엔터테이먼트' in agency:
             agency_query = 'agency = "EDAM엔터테이먼트"'
@@ -64,20 +64,46 @@ class WindowClass(QMainWindow, from_class):
         elif 'YG엔터테이먼트' in agency:
             agency_query = 'agency = "YG엔터테이먼트"'
         elif '안테나' in agency:
-            agency_query = 'and agency = "안테나"'
+            agency_query = 'agency = "안테나"'
         else:
-            pass
+            agency_query = None
 
-        return sex_query , job_query , agency_query        
+        final_query = self.make_finalquery(sex_query , job_query , agency_query)
+
+        return  final_query
+
+    def make_finalquery(self, sex_query , job_query , agency_query):
+        if (not sex_query == None) and (not job_query == None) and (not agency_query == None): ## 다 not none일 때
+            final_query = sex_query + ' and ' + job_query + ' and ' + agency_query 
+
+        elif (sex_query == None) and (not job_query == None) and (not agency_query == None): 
+            final_query = job_query + ' and ' + agency_query 
+        
+        elif (not sex_query == None) and (job_query == None) and (not agency_query == None): 
+            final_query = sex_query + ' and ' + agency_query 
+        
+        elif (not sex_query == None) and (not job_query == None) and (agency_query == None):  ## 하나만 none일 때
+            final_query = sex_query + ' and ' + job_query 
+        
+        elif (sex_query == None) and (job_query == None) and (not agency_query == None): 
+            final_query = agency_query 
+        
+        elif (sex_query == None) and (not job_query == None) and (agency_query == None): 
+            final_query = job_query  
+        
+        elif (not sex_query == None) and (job_query == None) and (agency_query == None):  ## 2개가 none일때 
+            final_query = sex_query 
+
+        else:
+            final_query = None
+
+        return final_query
+
 
     def show_table(self):
 
-        sex_query , job_query , agency_query  = self.make_query(self.comboBox.currentText(), 
-                                                                self.comboBox_2.currentText(),
-                                                                self.comboBox_3.currentText())
-        if not sex_query  and  not job_query  and not agency_query :
-            final_query = sex_query + ' and ' + job_query + ' and '+ agency_query
-            print(final_query)
+        final_query  = self.make_query(self.comboBox.currentText(), self.comboBox_2.currentText(), self.comboBox_3.currentText())
+        if not final_query == None :
             self.pyqt_cur.execute("select * from celeb where " + final_query)
         self.pyqt_con.commit()
 
@@ -90,6 +116,7 @@ class WindowClass(QMainWindow, from_class):
                 for idx, info in enumerate(celeb_info):
                     self.tableWidget.setItem(row, idx, QTableWidgetItem(str(info)))
         
+        self.tableWidget.clear()
     
     def __del__(self):
         self.pyqt_con.close()
