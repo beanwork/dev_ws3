@@ -22,7 +22,8 @@ class WindowClass(QMainWindow, from_class):
 
     def draw(self):
         painter = QPainter(self.label.pixmap()) # set instance of Qpainter
-        
+
+        '------------------Line-----------'
         self.pen = QPen(Qt.red, 5, Qt.SolidLine)  # change lineType and set instance of Qpen
         painter.setPen(self.pen)
 
@@ -41,13 +42,31 @@ class WindowClass(QMainWindow, from_class):
         self.p2 = QPoint(500, 300)
         painter.drawLine(self.p1, self.p2)
 
+        '-----------point------------'
         painter.setPen(QPen(Qt.red, 20, Qt.SolidLine))  # draw point
         painter.drawPoint(100,100)
 
+        '---------rectangular-------------'
         painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))  # draw rectuangular
+        painter.setBrush(QBrush(Qt.black))  # fill in rect with black
         painter.drawRect(100,100,100,100)
 
+        '---------ellipse-----------'
+        painter.setPen(QPen(Qt.red, 5, Qt.SolidLine)) ## draw cicrcle
+        painter.setBrush(QBrush(Qt.green))
+        painter.drawEllipse(100, 100, 100, 100)  ## center , rx, ry 
         
+        '------ text----------'
+        painter.setPen(QPen(Qt.blue, 5, Qt.SolidLine))
+
+        self.font = QFont()
+        self.font.setFamily('Times')
+        self.font.setBold(True)
+        self.font.setPointSize(20)
+        painter.setFont(self.font)
+
+        painter.drawText(100, 100, 'This is drawText')
+
         painter.end
 
 if __name__ == "__main__":
