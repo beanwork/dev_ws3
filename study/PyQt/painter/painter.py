@@ -1,7 +1,8 @@
 import sys
+import typing
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5 import uic
+from PyQt5 import QtGui, uic
 from PyQt5.QtCore import *
 import urllib.request
 
@@ -19,6 +20,7 @@ class WindowClass(QMainWindow, from_class):
 
         self.label.setPixmap(self.pixmap)
         self.draw()
+        self.x, self.y = None, None
 
     def draw(self):
         painter = QPainter(self.label.pixmap()) # set instance of Qpainter
@@ -65,9 +67,26 @@ class WindowClass(QMainWindow, from_class):
         self.font.setPointSize(20)
         painter.setFont(self.font)
 
-        painter.drawText(100, 100, 'This is drawText')
-        '---------------'
+        painter.drawText(500, 100, 'This is drawText')
+        
         painter.end
+    def mouseMoveEvent(self, event):
+        if self.x is None:
+            self.x = event.x()
+            self.y = event.y()
+            return
+        
+        painter = QPainter(self.label.pixmap())
+        painter.drawLine(self.x, self.y, event.x(), event.y())
+        painter.end()
+        self.update()
+
+        self.x = event.x()
+        self.y = event.y()
+        
+    def mouseReleaseEvent(self, event):
+        self.x = event.x()
+        self.y = event.y()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
