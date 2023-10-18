@@ -148,8 +148,24 @@ class WindowClass(QMainWindow, from_class):
 
             self.dateEdit.setText(str(min_birth))
             self.dateEdit_2.setText(str(max_birth))
+
    
-        return "(birth >= '{0}') and (birth <= '{1}') ".format(str(min_birth), str(max_birth))
+            return "(birth >= '{0}') and (birth <= '{1}') ".format(str(min_birth), str(max_birth))
+
+        start_birth = self.dateEdit.text()
+        start_y = start_birth[0:4]
+        start_m = start_birth[4:6]
+        start_d = start_birth[6:]
+        start_birth = start_y + '-' + start_m + '-' + start_d
+
+        end_birth = self.dateEdit_2.text()
+        end_y = end_birth[0:4]
+        end_m = end_birth[4:6]
+        end_d = end_birth[6:]
+        end_birth = end_y + '-' + end_m + '-' + end_d
+        
+        return "(birth >= '{0}') and (birth <= '{1}') ".format(start_birth, end_birth)
+    
     def __del__(self):
         self.pyqt_con.close()
 
