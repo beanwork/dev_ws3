@@ -104,9 +104,11 @@ class WindowClass(QMainWindow, from_class):
     def search(self):
         
         final_query  = self.make_query(self.comboBox.currentText(), self.comboBox_2.currentText(), self.comboBox_3.currentText())
-        birth_query = self.set_birth
-
-        self.pyqt_cur.execute("select * from celeb where " + birth_query + final_query)
+        birth_query = self.set_birth()
+        if final_query == '':
+            self.pyqt_cur.execute("select * from celeb where " + birth_query)
+        else:
+            self.pyqt_cur.execute("select * from celeb where " + birth_query + ' and ' + final_query)
         self.pyqt_con.commit()
 
         pyqt_result = self.pyqt_cur.fetchall()
@@ -122,11 +124,21 @@ class WindowClass(QMainWindow, from_class):
                     # print(type(self.dateEdit.text()))
     
     def set_birth(self):
-        self.pyqt_cur.execute("Select min(birth) from celeb;")
-        min_birth = self.pyqt_cur.fetchall()[0]
+        self.pyqt_cur.execute("select min(birth) from celeb;")
+        result = self.pyqt_cur.fetchall()[0]
+        min_y = result[0].year
+        min_m = result[0].month
+        min_d = result[0].day
+
+        min_birth = str(min_y) +'-' + str(min_m) + '-' + str(min_d)        
         
         self.pyqt_cur.execute("select max(birth) from celeb;")
-        max_birth = self.pyqt_cur.fetchall()[0]
+        result = self.pyqt_cur.fetchall()[0]
+        max_y = result[0].year
+        max_m = result[0].month
+        max_d = result[0].day
+        
+        max_birth = str(max_y) + '-' + str(max_m) + '-' + str(max_d)
 
         start_date = datetime.strptime(self.dateEdit.text(), '%Y%m%d').date()
         end_date = datetime.strptime(self.dateEdit_2.text(), '%Y%m%d').date()
