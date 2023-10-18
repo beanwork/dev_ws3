@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
-    <height>586</height>
+    <width>1060</width>
+    <height>715</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
      <x>160</x>
      <y>180</y>
      <width>661</width>
-     <height>361</height>
+     <height>461</height>
     </rect>
    </property>
    <property name="text">
@@ -76,6 +76,19 @@
    </property>
    <property name="text">
     <string>capture</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="movie_stopbtn">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>60</y>
+     <width>151</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>movie_stop</string>
    </property>
   </widget>
  </widget>

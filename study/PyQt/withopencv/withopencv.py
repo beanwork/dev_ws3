@@ -19,6 +19,7 @@ class WindowClass(QMainWindow, from_class):
         self.isRecStart = False
         self.recordbtn.hide()  # hide btn
         self.capturebtn.hide()
+        self.movie_stopbtn.hide()
 
         self.pixmap = QPixmap()
 
@@ -28,8 +29,12 @@ class WindowClass(QMainWindow, from_class):
         self.record = Camera(self)
         self.record.daemon = True
 
+        self.play_video = Camera(self)
+        self.play_video.daemon = True
+
         self.count = 0
         self.open_File.clicked.connect(self.openFile)
+        
 
         '-----------camera-------------'
         self.camerabtn.clicked.connect(self.clickCamera)
@@ -41,35 +46,22 @@ class WindowClass(QMainWindow, from_class):
 
         '-----------capture------------'
         self.capturebtn.clicked.connect(self.capture)
+
+        '-----------play_video---------'
+        self.play_video.update.connect(self.updateMovie)
+        self.movie_stopbtn.clicked.connect(self.clickMovie)
     
     
     def openFile(self):
         file = QFileDialog.getOpenFileName(self, 'open file', './')
 
         if file[0].split('.')[1] in ['avi', 'mp4']: 
-            video = cv2.VideoCapture(file[0])
-            if video.isOpened():
-                f_width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
-                f_height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)  
+            self.movie = cv2.VideoCapture(file[0])
+            self.play_video.running = True
+            self.play_video.start()
+            self.movie_stopbtn.show()
 
-            while video.isOpened():
-                retval, image = video.read()
-
-                if retval:
-                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-                    h,w,c = image.shape
-                    qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
-                    
-                    self.pixmap = self.pixmap.fromImage(qimage)
-                    self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
-
-                    self.label.setPixmap(self.pixmap)
-                    self.label.update()
-
-                    time.sleep(0.01) 
         else:
-
             image = cv2.imread(file[0])
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -160,6 +152,27 @@ class WindowClass(QMainWindow, from_class):
         retval, image = self.video.read()
         if retval:
             self.writer.write(image)
+
+    def updateMovie(self):
+        
+        retval, image = self.movie.read()
+
+        if retval:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            h,w,c = image.shape
+            qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
+            
+            self.pixmap = self.pixmap.fromImage(qimage)
+            self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
+
+            self.label.setPixmap(self.pixmap)
+            
+    
+    def clickMovie(self):
+        self.play_video.running = False
+        self.movie.release
+        
     
     def capture(self):
         retval, image = self.video.read()
