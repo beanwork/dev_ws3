@@ -16,6 +16,7 @@ class WindowClass(QMainWindow, from_class):
         self.setupUi(self)
         self.isCameraOn = False
         self.isRecStart = False
+        self.recordbtn.hide()  # hide btn
 
         self.pixmap = QPixmap()
         self.camera = Camera(self)
@@ -55,11 +56,13 @@ class WindowClass(QMainWindow, from_class):
         if self.isCameraOn == False:
             self.camerabtn.setText('Camera Off')
             self.isCameraOn = True
+            self.recordbtn.show()
 
             self.cameraStart()
         else:
             self.camerabtn.setText('Camera On')
             self.isCameraOn = False
+            self.recordbtn.hide()
 
             self.cameraStop()
     
