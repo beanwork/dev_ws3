@@ -65,17 +65,17 @@
     <string>Rec Start</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="recordbtn_2">
+  <widget class="QPushButton" name="capturebtn">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>250</x>
      <y>60</y>
      <width>151</width>
      <height>61</height>
     </rect>
    </property>
    <property name="text">
-    <string>Rec Start</string>
+    <string>capture</string>
    </property>
   </widget>
  </widget>
