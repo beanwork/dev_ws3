@@ -15,30 +15,31 @@ class WindowClass(QMainWindow, from_class):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        
         self.isCameraOn = False
         self.isRecStart = False
-        self.recordbtn.hide()  # hide btn
+        '--------hide btn--------'
+        self.recordbtn.hide()  
         self.capturebtn.hide()
-        self.movie_stopbtn.hide()
+        self.video_stopbtn.hide()
 
         self.pixmap = QPixmap()
 
-        self.camera = Camera(self)
-        self.camera.daemon = True
+        self.cam_thread = Camera(self)
+        self.cam_thread.daemon = True
 
         self.record = Camera(self)
         self.record.daemon = True
 
-        self.play_video = Camera(self)
-        self.play_video.daemon = True
+        self.vid = Camera(self)
+        self.vid.daemon = True
 
-        self.count = 0
         self.open_File.clicked.connect(self.openFile)
         
 
         '-----------camera-------------'
         self.camerabtn.clicked.connect(self.clickCamera)
-        self.camera.update.connect(self.updateCamera)
+        self.cam_thread.update.connect(self.updateCamera)
 
         '-----------record-------------'
         self.recordbtn.clicked.connect(self.clickRecord)
@@ -47,19 +48,19 @@ class WindowClass(QMainWindow, from_class):
         '-----------capture------------'
         self.capturebtn.clicked.connect(self.capture)
 
-        '-----------play_video---------'
-        self.play_video.update.connect(self.updateMovie)
-        self.movie_stopbtn.clicked.connect(self.clickMovie)
+        '-----------video---------'
+        self.vid.update.connect(self.updateVideo)
+        self.video_stopbtn.clicked.connect(self.clickVideo)
     
     
     def openFile(self):
         file = QFileDialog.getOpenFileName(self, 'open file', './')
 
         if file[0].split('.')[1] in ['avi', 'mp4']: 
-            self.movie = cv2.VideoCapture(file[0])
-            self.play_video.running = True
-            self.play_video.start()
-            self.movie_stopbtn.show()
+            self.video = cv2.VideoCapture(file[0])
+            self.vid.running = True
+            self.vid.start()
+            self.video_stopbtn.show()
 
         else:
             image = cv2.imread(file[0])
@@ -89,6 +90,7 @@ class WindowClass(QMainWindow, from_class):
     def recordingStart(self):
         self.record.running = True
         self.record.start()
+
         '--------record start----------'
         self.now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = self.now + '.avi'
@@ -101,7 +103,7 @@ class WindowClass(QMainWindow, from_class):
     
     def recordingStop(self):
         self.record.running = False
-        self.count=0
+
         '----------record stop----------'
         if self.isRecStart == True:
             self.writer.release()
@@ -124,17 +126,16 @@ class WindowClass(QMainWindow, from_class):
             self.recordingStop()  # if camera off, record video
     
     def cameraStart(self):
-        self.camera.running = True
-        self.camera.start() # start Thread
-        self.video = cv2.VideoCapture(-1)
+        self.cam_thread.running = True
+        self.cam_thread.start() # start Thread
+        self.camera = cv2.VideoCapture(-1)
     
     def cameraStop(self):
-        self.camera.running = False
-        self.count = 0
-        self.video.release
+        self.cam_thread.running = False
+        self.camera.release
     
     def updateCamera(self):
-        retval, image = self.video.read()
+        retval, image = self.camera.read()
         if retval:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -146,16 +147,16 @@ class WindowClass(QMainWindow, from_class):
 
             self.label.setPixmap(self.pixmap)
         
-        self.count += 1
+        
     
     def updateRecord(self):
-        retval, image = self.video.read()
+        retval, image = self.camera.read()
         if retval:
             self.writer.write(image)
 
-    def updateMovie(self):
+    def updateVideo(self):
         
-        retval, image = self.movie.read()
+        retval, image = self.video.read()
 
         if retval:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -169,13 +170,13 @@ class WindowClass(QMainWindow, from_class):
             self.label.setPixmap(self.pixmap)
             
     
-    def clickMovie(self):
-        self.play_video.running = False
-        self.movie.release
+    def clickVideo(self):
+        self.vid.running = False
+        self.video.release
         
     
     def capture(self):
-        retval, image = self.video.read()
+        retval, image = self.camera.read()
         if retval:
             self.now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = self.now + '.png'
