@@ -66,7 +66,7 @@ class WindowClass(QMainWindow, from_class):
         painter.setFont(self.font)
 
         painter.drawText(100, 100, 'This is drawText')
-
+        '---------------'
         painter.end
 
 if __name__ == "__main__":
