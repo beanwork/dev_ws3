@@ -78,7 +78,7 @@
     <string>capture</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="movie_stopbtn">
+  <widget class="QPushButton" name="video_stopbtn">
    <property name="geometry">
     <rect>
      <x>90</x>
