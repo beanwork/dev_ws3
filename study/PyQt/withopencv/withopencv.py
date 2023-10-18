@@ -96,8 +96,8 @@ class WindowClass(QMainWindow, from_class):
         filename = self.now + '.avi'
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-        w = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
-        h = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        w = int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h = int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         self.writer = cv2.VideoWriter(filename, self.fourcc, 20.0, (w,h))
     
