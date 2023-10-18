@@ -19,14 +19,23 @@ class WindowClass(QMainWindow, from_class):
         self.recordbtn.hide()  # hide btn
 
         self.pixmap = QPixmap()
+
         self.camera = Camera(self)
         self.camera.daemon = True
-        self.count = 0
 
+        self.record = Camera(self)
+        self.record.daemon = True
+
+        self.count = 0
         self.open_File.clicked.connect(self.openFile)
+
+        '-----------camera-------------'
         self.camerabtn.clicked.connect(self.clickCamera)
         self.camera.update.connect(self.updateCamera)
+
+        '-----------record-------------'
         self.recordbtn.clicked.connect(self.clickRecord)
+        self.record.update.connect(self.updateRecord)
     
     
     def openFile(self):
@@ -47,10 +56,22 @@ class WindowClass(QMainWindow, from_class):
         if self.isRecStart == False:
             self.recordbtn.setText('Rec Stop')
             self.isRecStart = True
+
+            self.recordingStart()
+
         else:
             self.recordbtn.setText('Rec Start')
             self.isRecStart = False
 
+            self.recordingStop()
+    
+    def recordingStart(self):
+        self.record.running = True
+        self.record.start()
+    
+    def recordingStop(self):
+        self.record.running = False
+        self.count=0
     
     def clickCamera(self):
         if self.isCameraOn == False:
@@ -89,6 +110,10 @@ class WindowClass(QMainWindow, from_class):
 
             self.label.setPixmap(self.pixmap)
         
+        self.count += 1
+    
+    def updateRecord(self):
+        self.recordbtn_2.setText(str(self.count))
         self.count += 1
 
 class Camera(QThread):  # 매 1초마다 시그널을 보내는 쓰레드를 만듬
