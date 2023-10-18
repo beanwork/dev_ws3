@@ -21,23 +21,28 @@ class WindowClass(QMainWindow, from_class):
         self.draw()
 
     def draw(self):
-        painter = QPainter(self.label.pixmap())
+        painter = QPainter(self.label.pixmap()) # set instance of Qpainter
         
-        self.pen = QPen(Qt.red, 5, Qt.SolidLine)
+        self.pen = QPen(Qt.red, 5, Qt.SolidLine)  # change lineType and set instance of Qpen
         painter.setPen(self.pen)
-        
+
         painter.drawLine(100,100,500,100)  # same format as opencv
+
+        self.pen.setBrush(Qt.blue)
+        self.pen.setWidth(10)
+        self.pen.setStyle(Qt.DashDotLine)
+        painter.setPen(self.pen)
 
         self.line = QLine(100,200,500,200)
         painter.drawLine(self.line)
 
+        painter.setPen(QPen(Qt.black, 20, Qt.DotLine))
         self.p1 = QPoint(100,300)
         self.p2 = QPoint(500, 300)
         painter.drawLine(self.p1, self.p2)
 
-        
-
         painter.end
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myWindow = WindowClass()
