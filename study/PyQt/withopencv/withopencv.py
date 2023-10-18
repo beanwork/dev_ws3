@@ -17,8 +17,13 @@ class WindowClass(QMainWindow, from_class):
         self.isCameraOn = False
 
         self.pixmap = QPixmap()
+        self.camera = Camera(self)
+        self.camera.daemon = True
+        self.count = 0
+
         self.open_File.clicked.connect(self.openFile)
-        self.camerabtn.clicked.connect(self.cameraOn)
+        self.camerabtn.clicked.connect(self.clickCamera)
+        self.camera.update.connect(self.updateCamera)
         
     
     def openFile(self):
@@ -35,15 +40,42 @@ class WindowClass(QMainWindow, from_class):
 
         self.label.setPixmap(self.pixmap)
     
-    def cameraOn(self):
+    def clickCamera(self):
         if self.isCameraOn == False:
             self.camerabtn.setText('Camera Off')
             self.isCameraOn = True
+
+            self.cameraStart()
         else:
             self.camerabtn.setText('Camera On')
             self.isCameraOn = False
 
+            self.cameraStop()
+    
+    def cameraStart(self):
+        self.camera.running = True
+        self.camera.start() # start Thread
+    
+    def cameraStop(self):
+        self.camera.running = False
+        self.count = 0
 
+class Camera(QThread):  # 매 1초마다 시그널을 보내는 쓰레드를 만듬
+    update = pyqtSignal()
+
+    def __init__(self, sec=0, parent=None):
+        super().__init__()
+        self.main = parent
+        self.running = True
+    
+    def run(self):
+        count = 0
+        while self.running == True:
+            self.update.emit()  # make signal
+            time.sleep(1)
+    
+    def stop(self):
+        self.running = False
 
 
 if __name__ == "__main__":
