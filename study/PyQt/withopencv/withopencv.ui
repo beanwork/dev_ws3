@@ -52,6 +52,19 @@
     <string>camera on</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="recordbtn">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>60</y>
+     <width>151</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Rec Start</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

@@ -15,6 +15,7 @@ class WindowClass(QMainWindow, from_class):
         super().__init__()
         self.setupUi(self)
         self.isCameraOn = False
+        self.isRecStart = False
 
         self.pixmap = QPixmap()
         self.camera = Camera(self)
@@ -24,6 +25,7 @@ class WindowClass(QMainWindow, from_class):
         self.open_File.clicked.connect(self.openFile)
         self.camerabtn.clicked.connect(self.clickCamera)
         self.camera.update.connect(self.updateCamera)
+        self.recordbtn.clicked.connect(self.clickRecord)
     
     
     def openFile(self):
@@ -39,6 +41,15 @@ class WindowClass(QMainWindow, from_class):
         self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
 
         self.label.setPixmap(self.pixmap)
+    
+    def clickRecord(self):
+        if self.isRecStart == False:
+            self.recordbtn.setText('Rec Stop')
+            self.isRecStart = True
+        else:
+            self.recordbtn.setText('Rec Start')
+            self.isRecStart = False
+
     
     def clickCamera(self):
         if self.isCameraOn == False:
