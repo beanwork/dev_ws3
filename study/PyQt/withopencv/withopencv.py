@@ -1,6 +1,7 @@
 import sys
 import cv2, imutils
 import time
+import datetime
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import uic
@@ -17,6 +18,7 @@ class WindowClass(QMainWindow, from_class):
         self.isCameraOn = False
         self.isRecStart = False
         self.recordbtn.hide()  # hide btn
+        self.capturebtn.hide()
 
         self.pixmap = QPixmap()
 
@@ -36,21 +38,48 @@ class WindowClass(QMainWindow, from_class):
         '-----------record-------------'
         self.recordbtn.clicked.connect(self.clickRecord)
         self.record.update.connect(self.updateRecord)
+
+        '-----------capture------------'
+        self.capturebtn.clicked.connect(self.capture)
     
     
     def openFile(self):
-        file = QFileDialog.getOpenFileName(filter='Image (*.*)')
+        file = QFileDialog.getOpenFileName(self, 'open file', './')
 
-        image = cv2.imread(file[0])
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        if file[0].split('.')[1] in ['avi', 'mp4']: 
+            video = cv2.VideoCapture(file[0])
+            if video.isOpened():
+                f_width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+                f_height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)  
 
-        h,w,c = image.shape
-        qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
+            while video.isOpened():
+                retval, image = video.read()
 
-        self.pixmap = self.pixmap.fromImage(qimage)
-        self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
+                if retval:
+                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        self.label.setPixmap(self.pixmap)
+                    h,w,c = image.shape
+                    qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
+                    
+                    self.pixmap = self.pixmap.fromImage(qimage)
+                    self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
+
+                    self.label.setPixmap(self.pixmap)
+                    self.label.update()
+
+                    time.sleep(0.01) 
+        else:
+
+            image = cv2.imread(file[0])
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            h,w,c = image.shape
+            qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
+
+            self.pixmap = self.pixmap.fromImage(qimage)
+            self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
+
+            self.label.setPixmap(self.pixmap)
     
     def clickRecord(self):
         if self.isRecStart == False:
@@ -68,24 +97,39 @@ class WindowClass(QMainWindow, from_class):
     def recordingStart(self):
         self.record.running = True
         self.record.start()
+        '--------record start----------'
+        self.now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = self.now + '.avi'
+        self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
+
+        w = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        self.writer = cv2.VideoWriter(filename, self.fourcc, 20.0, (w,h))
     
     def recordingStop(self):
         self.record.running = False
         self.count=0
+        '----------record stop----------'
+        if self.isRecStart == True:
+            self.writer.release()
     
     def clickCamera(self):
         if self.isCameraOn == False:
             self.camerabtn.setText('Camera Off')
             self.isCameraOn = True
             self.recordbtn.show()
+            self.capturebtn.show()
 
             self.cameraStart()
         else:
             self.camerabtn.setText('Camera On')
             self.isCameraOn = False
             self.recordbtn.hide()
+            self.capturebtn.hide()
 
             self.cameraStop()
+            self.recordingStop()  # if camera off, record video
     
     def cameraStart(self):
         self.camera.running = True
@@ -113,8 +157,16 @@ class WindowClass(QMainWindow, from_class):
         self.count += 1
     
     def updateRecord(self):
-        self.recordbtn_2.setText(str(self.count))
-        self.count += 1
+        retval, image = self.video.read()
+        if retval:
+            self.writer.write(image)
+    
+    def capture(self):
+        retval, image = self.video.read()
+        if retval:
+            self.now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = self.now + '.png'
+            cv2.imwrite(filename, image)
 
 class Camera(QThread):  # 매 1초마다 시그널을 보내는 쓰레드를 만듬
     update = pyqtSignal()
