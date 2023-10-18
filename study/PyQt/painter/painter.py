@@ -41,6 +41,13 @@ class WindowClass(QMainWindow, from_class):
         self.p2 = QPoint(500, 300)
         painter.drawLine(self.p1, self.p2)
 
+        painter.setPen(QPen(Qt.red, 20, Qt.SolidLine))  # draw point
+        painter.drawPoint(100,100)
+
+        painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))  # draw rectuangular
+        painter.drawRect(100,100,100,100)
+
+        
         painter.end
 
 if __name__ == "__main__":
