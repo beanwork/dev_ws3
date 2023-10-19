@@ -109,6 +109,7 @@ class WindowClass(QMainWindow, from_class):
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
 
             self.pixmap = self.pixmap.fromImage(qimage)
+            self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
             
             self.label.setPixmap(self.pixmap)
     
@@ -116,13 +117,13 @@ class WindowClass(QMainWindow, from_class):
     '-----------------------RECORD---------------------'
     def clickRecord(self):
         if self.isRecStart == False:
-            self.recordbtn.setText('Rec Stop')
+            self.recordbtn.setText('Record Stop')
             self.isRecStart = True
 
             self.recordingStart()
 
         else:
-            self.recordbtn.setText('Rec Start')
+            self.recordbtn.setText('Record Start')
             self.isRecStart = False
 
             self.recordingStop()
@@ -327,6 +328,7 @@ class WindowClass(QMainWindow, from_class):
     def setDrawMode(self):
         if self.DrawMode == False:
             self.DrawMode = True
+            self.color = QColorDialog.getColor()
             self.draw.setText('stop draw')
 
         else:
@@ -351,13 +353,14 @@ class WindowClass(QMainWindow, from_class):
 
             if self.DrawMode == True:
                 painter = QPainter(self.label.pixmap())
-                self.pen = QPen(Qt.red, 5, Qt.SolidLine)
+                
+                self.pen = QPen(self.color, 5, Qt.SolidLine)
                 painter.setPen(self.pen)
                 painter.drawLine(self.past_x, self.past_y,
                                   self.present_x, self.present_y)
                 painter.end()
                 self.update()
-                
+
             self.past_x = self.present_x
             self.past_y = self.present_y
 
