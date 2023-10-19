@@ -30,7 +30,6 @@ class WindowClass(QMainWindow, from_class):
         self.HSV.hide()
         self.draw.hide()
         
-
         '-------declare slider------'
 
         self.R_or_H.setRange(0, 179)
@@ -179,7 +178,20 @@ class WindowClass(QMainWindow, from_class):
 
             self.writer.write(image)
 
+    def keyReleaseEvent(self,e): #키를 누른상태에서 뗏을 때 실행됨
+        if e.key() == Qt.Key_A:
+            if self.isRecStart == False:
+                self.recordbtn.setText('Record Stop')
+                self.isRecStart = True
 
+                self.recordingStart()
+
+            else:
+                self.recordbtn.setText('Record Start')
+                self.isRecStart = False
+
+                self.recordingStop()
+    
     '-----------------------CAMERA---------------------'
     def clickCamera(self):
         if self.isCameraOn == False:
@@ -303,7 +315,7 @@ class WindowClass(QMainWindow, from_class):
     
 
 
-    '---------------------CHANGE COLOR---------------------'
+    '---------------------CHANGE HSV or RGB---------------------'
     def changetoHSV(self):
         self.RGB.show()
         
@@ -363,6 +375,8 @@ class WindowClass(QMainWindow, from_class):
 
             self.past_x = self.present_x
             self.past_y = self.present_y
+
+
 
 
 class SendSignal(QThread):  # 매 1초마다 시그널을 보내는 쓰레드를 만듬
