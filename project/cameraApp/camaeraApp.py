@@ -2,7 +2,6 @@ import sys
 import cv2, imutils
 import datetime
 import time
-import numpy as np
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import uic
@@ -29,6 +28,7 @@ class WindowClass(QMainWindow, from_class):
         self.B_or_V.hide()
         self.RGB.hide()
         self.HSV.hide()
+        self.draw.hide()
 
         '-------declare slider------'
 
@@ -76,18 +76,14 @@ class WindowClass(QMainWindow, from_class):
         self.HSV.clicked.connect(self.changetoHSV)
 
         self.CHANGE_TO_HSV = False
-        if self.CHANGE_TO_HSV == True:
-            self.R_or_H.valueChanged.connect(self.H_inHSV)
-            self.G_or_S.valueChanged.connect(self.S_inHSV)
-            self.B_or_V.valueChanged.connect(self.V_inHSV)
         
-        self.H = True
-        self.S = False
-        self.V = False
-
         '--------------RGB------------'
         self.RGB.clicked.connect(self.changetoRGB)
         self.CHANGE_TO_RGB = False
+
+        '-------------DRAW-------------'
+        self.draw.clicked.connect(self.setDrawMode)
+        self.DrawMode = False
     
     
     def openFile(self):
@@ -99,6 +95,8 @@ class WindowClass(QMainWindow, from_class):
             self.videoStart()
 
         else:
+            self.draw.show()
+
             image = cv2.imread(file_name[0])
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -188,6 +186,8 @@ class WindowClass(QMainWindow, from_class):
         self.B_or_V.show()
 
         self.HSV.show()
+        self.draw.show()
+
         retval, image = self.camera.read()
         if retval:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -204,7 +204,6 @@ class WindowClass(QMainWindow, from_class):
                 S = S +s_value
                 V = V +v_value
 
-                
                 image = cv2.merge((H,S,V))
             else:
                 R,G,B = cv2.split(image)
@@ -247,8 +246,9 @@ class WindowClass(QMainWindow, from_class):
         self.R_or_H.show()
         self.G_or_S.show()
         self.B_or_V.show()
-
+        
         self.HSV.show()
+        self.draw.show()
 
         retval, image = self.video.read()
         if retval:
@@ -258,8 +258,6 @@ class WindowClass(QMainWindow, from_class):
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
                 h,s,v = cv2.split(image)
                 
-                
-
             h,w,c = image.shape
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
             
@@ -298,10 +296,39 @@ class WindowClass(QMainWindow, from_class):
         self.label_4.setText("B")
 
         self.CHANGE_TO_HSV = False
+    
 
+    '------------------DRAW PICTURE---------------------'
+    def setDrawMode(self):
+        if self.DrawMode == False:
+            self.DrawMode = True
+            self.draw.setText('stop draw')
+
+        else:
+            self.DrawMode = False
+            self.draw.setText('draw')
+    
+    def mouseMoveEvent(self, event):
+        if self.x is None:
+            self.x = event.x()
+            self.y = event.y()
+            return
         
-        
-        
+        if self.DrawMode == True:
+            painter = QPainter(self.label.pixmap())
+            self.pen = QPen(Qt.red, 5, Qt.SolidLine)
+            painter.setPen(self.pen)
+            painter.drawLine(self.x, self.y, event.x(), event.y())
+            painter.end()
+            self.update()
+
+        self.x = event.x()
+        self.y = event.y()
+
+    def mouseReleaseEvent(self, event):
+        self.x = event.x()
+        self.y = event.y()
+    
 
 
 class SendSignal(QThread):  # 매 1초마다 시그널을 보내는 쓰레드를 만듬
