@@ -29,6 +29,7 @@ class WindowClass(QMainWindow, from_class):
         self.RGB.hide()
         self.HSV.hide()
         self.draw.hide()
+        self.binary.hide()
         
         '-------declare slider------'
 
@@ -88,7 +89,10 @@ class WindowClass(QMainWindow, from_class):
         self.past_y = None
         self.present_x = None
         self.present_y = None
-    
+
+        '-------------BINARY-------------'
+        self.binary.clicked.connect(self.setBinaryMode)
+        self.BinaryMode = False
     
     def openFile(self):
 
@@ -115,6 +119,8 @@ class WindowClass(QMainWindow, from_class):
 
     '-----------------------RECORD---------------------'
     def clickRecord(self):
+        self.binary.hide()
+
         if self.isRecStart == False:
             self.recordbtn.setText('Record Stop')
             self.isRecStart = True
@@ -164,6 +170,8 @@ class WindowClass(QMainWindow, from_class):
                 V = V +v_value
 
                 image = cv2.merge((H,S,V))
+                self.writer.write(image)
+
             else:
                 R,G,B = cv2.split(image)
                 r_value = self.R_or_H.value()
@@ -176,21 +184,18 @@ class WindowClass(QMainWindow, from_class):
 
                 image = cv2.merge((R,G,B))
 
-            self.writer.write(image)
+                if self.BinaryMode == True:
+                    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    ret, image = cv2.threshold(gray, int(self.threshold), 255, cv2.THRESH_BINARY)
+                    self.writer.write(image)
+                else:
+                    self.writer.write(image)
+
+                
 
     def keyReleaseEvent(self,e): #키를 누른상태에서 뗏을 때 실행됨
         if e.key() == Qt.Key_A:
-            if self.isRecStart == False:
-                self.recordbtn.setText('Record Stop')
-                self.isRecStart = True
-
-                self.recordingStart()
-
-            else:
-                self.recordbtn.setText('Record Start')
-                self.isRecStart = False
-
-                self.recordingStop()
+            self.clickRecord()
     
     '-----------------------CAMERA---------------------'
     def clickCamera(self):
@@ -225,7 +230,7 @@ class WindowClass(QMainWindow, from_class):
         self.B_or_V.show()
 
         self.HSV.show()
-        self.draw.show()
+        self.binary.show()
 
         retval, image = self.camera.read()
         if retval:
@@ -255,10 +260,12 @@ class WindowClass(QMainWindow, from_class):
                 B = B +b_value
 
                 image = cv2.merge((R,G,B))
+            
                 
             h,w,c = image.shape
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
-            
+            if self.BinaryMode == True:
+                qimage = self.changeBinary(image)
             self.pixmap = self.pixmap.fromImage(qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
 
@@ -375,6 +382,26 @@ class WindowClass(QMainWindow, from_class):
 
             self.past_x = self.present_x
             self.past_y = self.present_y
+    '-----------------CONVERSION-----------------'
+    def setBinaryMode(self):
+        if self.BinaryMode == False:
+            self.threshold, ok = QInputDialog.getText(self, 'Input Threshold You Want', 'Threshold')
+
+            if self.threshold and ok:
+                self.BinaryMode = True
+                self.binary.setText("stop binary")
+        else:
+            self.BinaryMode = False
+            self.binary.setText("binary")
+
+    def changeBinary(self, image):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        ret, image = cv2.threshold(gray, int(self.threshold), 255, cv2.THRESH_BINARY)
+            
+        h,w= image.shape
+        qimage = QImage(image.data, w, h, image.strides[0], QImage.Format_Grayscale8)
+        
+        return qimage
 
 
 
