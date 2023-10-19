@@ -149,6 +149,27 @@ class WindowClass(QMainWindow, from_class):
             if self.CHANGE_TO_HSV == True:
                 self.HSV.hide()
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+                H,S,V = cv2.split(image)
+                h_value = self.R_or_H.value()
+                s_value = self.G_or_S.value()
+                v_value = self.B_or_V.value()
+
+                H = H +h_value
+                S = S +s_value
+                V = V +v_value
+
+                image = cv2.merge((H,S,V))
+            else:
+                R,G,B = cv2.split(image)
+                r_value = self.R_or_H.value()
+                g_value = self.G_or_S.value()
+                b_value = self.B_or_V.value()
+
+                R = R +r_value
+                G = G +g_value
+                B = B +b_value
+
+                image = cv2.merge((R,G,B))
 
             self.writer.write(image)
 
@@ -256,7 +277,6 @@ class WindowClass(QMainWindow, from_class):
             if self.CHANGE_TO_HSV == True:
                 self.HSV.hide()
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-                h,s,v = cv2.split(image)
                 
             h,w,c = image.shape
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
