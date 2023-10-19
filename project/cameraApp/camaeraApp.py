@@ -22,7 +22,13 @@ class WindowClass(QMainWindow, from_class):
         self.recordbtn.hide()  
         self.capturebtn.hide()
         self.videobtn.hide()
+        self.R_or_H.hide()
+        self.G_or_S.hide()
+        self.B_or_V.hide()
+        self.RGB.hide()
 
+
+        '----------declare pixmap------'
         self.pixmap = QPixmap()
 
         '----------thread-------------'
@@ -52,6 +58,13 @@ class WindowClass(QMainWindow, from_class):
         '-----------video---------'
         self.vid_thread.update.connect(self.updateVideo)
         self.videobtn.clicked.connect(self.clickVideo)
+
+        '---------------HSV-----------'
+        self.HSV.clicked.connect(self.changetoHSV)
+        self.CHANGE_TO_HSV = False
+
+        '--------------RGB------------'
+        self.RGB.clicked.connect(self.changetoRGB)
     
     
     def openFile(self):
@@ -174,6 +187,8 @@ class WindowClass(QMainWindow, from_class):
         retval, image = self.video.read()
         if retval:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            if self.CHANGE_TO_HSV == True:
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
             h,w,c = image.shape
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
@@ -191,6 +206,34 @@ class WindowClass(QMainWindow, from_class):
             self.now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = self.now + '.png'
             cv2.imwrite(filename, image)
+    
+
+    '---------------------CHANGE COLOR---------------------'
+    def changetoHSV(self):
+        self.R_or_H.show()
+        self.G_or_S.show()
+        self.B_or_V.show()
+
+        self.R_or_H.setText("H")
+        self.G_or_S.setText("S")
+        self.B_or_V.setText("V")
+        
+        self.CHANGE_TO_HSV = True
+
+
+    
+    def changetoRGB(self):
+        self.R_or_H.show()
+        self.G_or_S.show()
+        self.B_or_V.show()
+
+        self.R_or_H.setText("R")
+        self.G_or_S.setText("G")
+        self.B_or_V.setText("B")
+
+        rgb_image = cv2.cvtColor(self.pixmap, cv2.COLOR_HSV2RGB)
+        
+        
 
 
 class SendSignal(QThread):  # 매 1초마다 시그널을 보내는 쓰레드를 만듬
