@@ -2,10 +2,12 @@ import sys
 import cv2, imutils
 import datetime
 import time
+import numpy as np
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import uic
 from PyQt5.QtCore import *
+
 
 from_class = uic.loadUiType("cameraApp.ui")[0]
 
@@ -26,7 +28,18 @@ class WindowClass(QMainWindow, from_class):
         self.G_or_S.hide()
         self.B_or_V.hide()
         self.RGB.hide()
+        self.HSV.hide()
 
+        '-------declare slider------'
+
+        self.R_or_H.setRange(0, 179)
+        self.R_or_H.setSingleStep(1)
+
+        self.G_or_S.setRange(0, 255)
+        self.G_or_S.setSingleStep(1)
+
+        self.B_or_V.setRange(0, 255)
+        self.B_or_V.setSingleStep(1)
 
         '----------declare pixmap------'
         self.pixmap = QPixmap()
@@ -61,10 +74,20 @@ class WindowClass(QMainWindow, from_class):
 
         '---------------HSV-----------'
         self.HSV.clicked.connect(self.changetoHSV)
+
         self.CHANGE_TO_HSV = False
+        if self.CHANGE_TO_HSV == True:
+            self.R_or_H.valueChanged.connect(self.H_inHSV)
+            self.G_or_S.valueChanged.connect(self.S_inHSV)
+            self.B_or_V.valueChanged.connect(self.V_inHSV)
+        
+        self.H = True
+        self.S = False
+        self.V = False
 
         '--------------RGB------------'
         self.RGB.clicked.connect(self.changetoRGB)
+        self.CHANGE_TO_RGB = False
     
     
     def openFile(self):
@@ -121,8 +144,14 @@ class WindowClass(QMainWindow, from_class):
             self.writer.release()
 
     def updateRecord(self):
+
         retval, image = self.camera.read()
         if retval:
+
+            if self.CHANGE_TO_HSV == True:
+                self.HSV.hide()
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+
             self.writer.write(image)
 
 
@@ -154,10 +183,41 @@ class WindowClass(QMainWindow, from_class):
         self.camera.release
 
     def updateCamera(self):
+        self.R_or_H.show()
+        self.G_or_S.show()
+        self.B_or_V.show()
+
+        self.HSV.show()
         retval, image = self.camera.read()
         if retval:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+            if self.CHANGE_TO_HSV == True:
+                self.HSV.hide()
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+                H,S,V = cv2.split(image)
+                h_value = self.R_or_H.value()
+                s_value = self.G_or_S.value()
+                v_value = self.B_or_V.value()
+
+                H = H +h_value
+                S = S +s_value
+                V = V +v_value
+
+                
+                image = cv2.merge((H,S,V))
+            else:
+                R,G,B = cv2.split(image)
+                r_value = self.R_or_H.value()
+                g_value = self.G_or_S.value()
+                b_value = self.B_or_V.value()
+
+                R = R +r_value
+                G = G +g_value
+                B = B +b_value
+
+                image = cv2.merge((R,G,B))
+                
             h,w,c = image.shape
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
             
@@ -184,11 +244,21 @@ class WindowClass(QMainWindow, from_class):
 
     
     def updateVideo(self):
+        self.R_or_H.show()
+        self.G_or_S.show()
+        self.B_or_V.show()
+
+        self.HSV.show()
+
         retval, image = self.video.read()
         if retval:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             if self.CHANGE_TO_HSV == True:
+                self.HSV.hide()
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+                h,s,v = cv2.split(image)
+                
+                
 
             h,w,c = image.shape
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
@@ -208,30 +278,28 @@ class WindowClass(QMainWindow, from_class):
             cv2.imwrite(filename, image)
     
 
+
     '---------------------CHANGE COLOR---------------------'
     def changetoHSV(self):
-        self.R_or_H.show()
-        self.G_or_S.show()
-        self.B_or_V.show()
-
-        self.R_or_H.setText("H")
-        self.G_or_S.setText("S")
-        self.B_or_V.setText("V")
+        self.RGB.show()
         
+        self.label_2.setText("H")
+        self.label_3.setText("S")
+        self.label_4.setText("V")
+
         self.CHANGE_TO_HSV = True
 
 
-    
     def changetoRGB(self):
-        self.R_or_H.show()
-        self.G_or_S.show()
-        self.B_or_V.show()
+        self.RGB.hide()
+    
+        self.label_2.setText("R")
+        self.label_3.setText("G")
+        self.label_4.setText("B")
 
-        self.R_or_H.setText("R")
-        self.G_or_S.setText("G")
-        self.B_or_V.setText("B")
+        self.CHANGE_TO_HSV = False
 
-        rgb_image = cv2.cvtColor(self.pixmap, cv2.COLOR_HSV2RGB)
+        
         
         
 
