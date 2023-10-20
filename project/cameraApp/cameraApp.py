@@ -31,12 +31,14 @@ class WindowClass(QMainWindow, from_class):
         self.draw.hide()
         self.binary.hide()
         self.scan.hide()
-        self.filter.hide()
+        self.sharp.hide()
         self.cannyedge.hide()
         self.blur.hide()
         self.label_2.hide()
         self.label_3.hide()
         self.label_4.hide()
+        self.label_5.hide()
+        self.label_6.hide()
         self.blurslider.hide()
         self.cannyedgeslider.hide()
         
@@ -139,6 +141,9 @@ class WindowClass(QMainWindow, from_class):
         self.label_2.show()
         self.label_3.show()
         self.label_4.show()
+        self.label_5.show()
+        self.label_6.show()
+
         self.blurslider.show()
         self.cannyedgeslider.show()
 
@@ -251,7 +256,7 @@ class WindowClass(QMainWindow, from_class):
     
     def cameraStop(self):
         self.cam_thread.running = False
-        self.camera.release
+        self.camera.release()
 
     def updateCamera(self):
         self.showBtn('Camera')
@@ -312,7 +317,7 @@ class WindowClass(QMainWindow, from_class):
 
     def videoStop(self):
         self.vid_thread.running = False
-        self.video.release
+        self.video.release()
         self.videobtn.setText("video start")
 
     
@@ -431,7 +436,7 @@ class WindowClass(QMainWindow, from_class):
     def changeBinary(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         ret, image = cv2.threshold(gray, int(self.threshold), 255, cv2.THRESH_BINARY)
-            
+         
         h,w= image.shape
         qimage = QImage(image.data, w, h, image.strides[0], QImage.Format_Grayscale8)
         
@@ -460,6 +465,10 @@ class WindowClass(QMainWindow, from_class):
         qimage = QImage(image.data, w, h,w*c, QImage.Format_RGB888)
         
         return qimage
+    
+    '--------------------SHARP-CONVERSION----------------------'
+    # def setSharpMode(self):
+    #     if
     
 
 
