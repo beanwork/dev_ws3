@@ -9,7 +9,7 @@ from PyQt5.QtCore import *
 
 
 from_class = uic.loadUiType("cameraApp.ui")[0]
-oldx = oldy = -1
+
 class WindowClass(QMainWindow, from_class):
 
     def __init__(self):
@@ -30,6 +30,13 @@ class WindowClass(QMainWindow, from_class):
         self.HSV.hide()
         self.draw.hide()
         self.binary.hide()
+        self.scan.hide()
+        self.filter.hide()
+        self.cannyedge.hide()
+        self.blur.hide()
+        self.label_2.hide()
+        self.label_3.hide()
+        self.label_4.hide()
         
         '-------declare slider------'
 
@@ -93,6 +100,10 @@ class WindowClass(QMainWindow, from_class):
         '-------------BINARY-------------'
         self.binary.clicked.connect(self.setBinaryMode)
         self.BinaryMode = False
+
+        '-------------Blur---------------'
+        self.blur.clicked.connect(self.setBlurMode)
+        self.BlurMode = False
     
     def openFile(self):
 
@@ -115,7 +126,26 @@ class WindowClass(QMainWindow, from_class):
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
             
             self.label.setPixmap(self.pixmap)
-    
+
+    '------------------SHOW BUTTON--------------------'        
+    def showBtn(self, status):
+
+        self.R_or_H.show()
+        self.G_or_S.show()
+        self.B_or_V.show()
+
+        self.label_2.show()
+        self.label_3.show()
+        self.label_4.show()
+
+        self.HSV.show()
+
+        if status == 'Camera':
+            self.binary.show()
+            self.blur.show()
+
+        if status == 'Video': 
+            self.draw.show()
 
     '-----------------------RECORD---------------------'
     def clickRecord(self):
@@ -219,12 +249,7 @@ class WindowClass(QMainWindow, from_class):
         self.camera.release
 
     def updateCamera(self):
-        self.R_or_H.show()
-        self.G_or_S.show()
-        self.B_or_V.show()
-
-        self.HSV.show()
-        self.binary.show()
+        self.showBtn('Camera')
 
         retval, image = self.camera.read()
         if retval:
@@ -258,8 +283,11 @@ class WindowClass(QMainWindow, from_class):
                 
             h,w,c = image.shape
             qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
-            if self.BinaryMode == True:
+            if self.BlurMode == True:
+                qimage = self.changeBlur(image)    
+            elif  self.BinaryMode == True:
                 qimage = self.changeBinary(image)
+            
             self.pixmap = self.pixmap.fromImage(qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
 
@@ -283,12 +311,8 @@ class WindowClass(QMainWindow, from_class):
 
     
     def updateVideo(self):
-        self.R_or_H.show()
-        self.G_or_S.show()
-        self.B_or_V.show()
-        
-        self.HSV.show()
-        self.draw.show()
+
+        self.showBtn('Video')
 
         retval, image = self.video.read()
         if retval:
@@ -318,7 +342,6 @@ class WindowClass(QMainWindow, from_class):
                 
             cv2.imwrite(filename, image)
     
-
 
     '---------------------CHANGE HSV or RGB---------------------'
     def changetoHSV(self):
@@ -380,6 +403,7 @@ class WindowClass(QMainWindow, from_class):
 
             self.past_x = self.present_x
             self.past_y = self.present_y
+
     '-----------------BINARY-CONVERSION-----------------'
     def setBinaryMode(self):
         if self.BinaryMode == False:
@@ -404,8 +428,36 @@ class WindowClass(QMainWindow, from_class):
         qimage = QImage(image.data, w, h, image.strides[0], QImage.Format_Grayscale8)
         
         return qimage
+    
+    '----------------------BLUR-CONVERSION---------------------'
+    def setBlurMode(self):
 
+        if self.BlurMode == False:
+            self.RGB.hide()
+            self.HSV.hide()
+            self.G_or_S.hide()
+            self.B_or_V.hide()
 
+            self.BlurMode = True
+            self.blur.setText("stop blur")
+        else:
+            self.RGB.show()
+            self.HSV.show()
+            self.G_or_S.show()
+            self.B_or_V.show()
+
+            self.BlurMode = False
+            self.blur.setText("blur")
+    
+    def changeBlur(self,image):
+        filter_value = self.R_or_H.value()
+        image  = cv2.GaussianBlur(image, (filter_value, filter_value), 0)
+        
+        h,w,c= image.shape
+        qimage = QImage(image.data, w, h,w*c, QImage.Format_RGB888)
+        
+        return qimage
+    
 
 
 class SendSignal(QThread):  # 매 1초마다 시그널을 보내는 쓰레드를 만듬
