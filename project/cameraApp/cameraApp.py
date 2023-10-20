@@ -183,16 +183,10 @@ class WindowClass(QMainWindow, from_class):
                 B = B +b_value
 
                 image = cv2.merge((R,G,B))
-
-                if self.BinaryMode == True:
-                    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                    ret, image = cv2.threshold(gray, int(self.threshold), 255, cv2.THRESH_BINARY)
-                    self.writer.write(image)
-                else:
-                    self.writer.write(image)
+             
+            self.writer.write(image)
 
                 
-
     def keyReleaseEvent(self,e): #키를 누른상태에서 뗏을 때 실행됨
         if e.key() == Qt.Key_A:
             self.clickRecord()
@@ -318,6 +312,10 @@ class WindowClass(QMainWindow, from_class):
         if retval:
             self.now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = self.now + '.png'
+            if self.BinaryMode == True:
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                ret, image = cv2.threshold(gray, int(self.threshold), 255, cv2.THRESH_BINARY)
+                
             cv2.imwrite(filename, image)
     
 
@@ -382,7 +380,7 @@ class WindowClass(QMainWindow, from_class):
 
             self.past_x = self.present_x
             self.past_y = self.present_y
-    '-----------------CONVERSION-----------------'
+    '-----------------BINARY-CONVERSION-----------------'
     def setBinaryMode(self):
         if self.BinaryMode == False:
             self.threshold, ok = QInputDialog.getText(self, 'Input Threshold You Want', 'Threshold')
@@ -390,9 +388,13 @@ class WindowClass(QMainWindow, from_class):
             if self.threshold and ok:
                 self.BinaryMode = True
                 self.binary.setText("stop binary")
+                self.recordbtn.hide()
+                self.capturebtn.hide()
         else:
             self.BinaryMode = False
             self.binary.setText("binary")
+            self.recordbtn.show()
+            self.capturebtn.show()
 
     def changeBinary(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
