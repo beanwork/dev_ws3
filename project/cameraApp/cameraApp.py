@@ -37,6 +37,8 @@ class WindowClass(QMainWindow, from_class):
         self.label_2.hide()
         self.label_3.hide()
         self.label_4.hide()
+        self.blurslider.hide()
+        self.cannyedgeslider.hide()
         
         '-------declare slider------'
 
@@ -137,12 +139,15 @@ class WindowClass(QMainWindow, from_class):
         self.label_2.show()
         self.label_3.show()
         self.label_4.show()
+        self.blurslider.show()
+        self.cannyedgeslider.show()
 
         self.HSV.show()
 
         if status == 'Camera':
             self.binary.show()
             self.blur.show()
+            
 
         if status == 'Video': 
             self.draw.show()
@@ -280,13 +285,14 @@ class WindowClass(QMainWindow, from_class):
 
                 image = cv2.merge((R,G,B))
             
-                
-            h,w,c = image.shape
-            qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
+
             if self.BlurMode == True:
                 qimage = self.changeBlur(image)    
             elif  self.BinaryMode == True:
                 qimage = self.changeBinary(image)
+            else:
+                h,w,c = image.shape  
+                qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
             
             self.pixmap = self.pixmap.fromImage(qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
@@ -407,6 +413,7 @@ class WindowClass(QMainWindow, from_class):
     '-----------------BINARY-CONVERSION-----------------'
     def setBinaryMode(self):
         if self.BinaryMode == False:
+            
             self.threshold, ok = QInputDialog.getText(self, 'Input Threshold You Want', 'Threshold')
 
             if self.threshold and ok:
@@ -414,6 +421,7 @@ class WindowClass(QMainWindow, from_class):
                 self.binary.setText("stop binary")
                 self.recordbtn.hide()
                 self.capturebtn.hide()
+
         else:
             self.BinaryMode = False
             self.binary.setText("binary")
@@ -433,24 +441,19 @@ class WindowClass(QMainWindow, from_class):
     def setBlurMode(self):
 
         if self.BlurMode == False:
-            self.RGB.hide()
-            self.HSV.hide()
-            self.G_or_S.hide()
-            self.B_or_V.hide()
-
+        
             self.BlurMode = True
             self.blur.setText("stop blur")
         else:
-            self.RGB.show()
-            self.HSV.show()
-            self.G_or_S.show()
-            self.B_or_V.show()
 
             self.BlurMode = False
             self.blur.setText("blur")
     
     def changeBlur(self,image):
-        filter_value = self.R_or_H.value()
+        filter_value = self.blurslider.value()
+
+        if filter_value%2 == 0:
+            filter_value += 1
         image  = cv2.GaussianBlur(image, (filter_value, filter_value), 0)
         
         h,w,c= image.shape
