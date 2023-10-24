@@ -36,6 +36,14 @@ int returnTime()
 }
 
 
+void resetTime()
+{
+  cur_hour = 0;
+  cur_minute = 0;
+  cur_second = 0;
+}
+
+
 int setNextHour(int value)
 {
   next_hour = map(value, 0, 1000, 0, 8); 
@@ -125,8 +133,7 @@ void setup()
 
 void loop()
 {
-  // int second = (millis()/1000)%60;
-  cur_hour, cur_minute, cur_second = returnTime();
+  
   bool setNextTime = digitalRead(button);
   bool giveInstantly = digitalRead(button2); 
 
@@ -178,7 +185,8 @@ void loop()
     lcd.setCursor(0, 0);
     lcd.print("left Time is");
     lcd.setCursor(0, 1);
-    
+
+    cur_hour, cur_minute, cur_second = returnTime();
     int left_hour = next_hour - cur_hour;
     int left_minute = next_minute - cur_minute;
     int left_second = next_second - cur_second;
@@ -206,7 +214,19 @@ void loop()
 
     if ((left_hour == 0) && (left_minute == 0) && (left_second == 0))
     {
-      flag2 = 1;
+      lcd.clear();
+      lcd.print("It's time");
+      lcd.setCursor(0, 1);
+      lcd.print("to meal");
+
+      lcd.noDisplay();
+      delay(500);
+      lcd.display();
+      delay(500);
+
+      flag = 0;
+      resetTime();
+
     }
   }
 
