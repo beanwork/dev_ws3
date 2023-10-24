@@ -36,14 +36,6 @@ int returnTime()
 }
 
 
-void resetTime()
-{
-  cur_hour = 0;
-  cur_minute = 0;
-  cur_second = 0;
-}
-
-
 int setNextHour(int value)
 {
   next_hour = map(value, 0, 1000, 0, 8); 
@@ -127,7 +119,7 @@ void setup()
   pinMode(button, INPUT);
   pinMode(button2, INPUT);
   
-  Serial.begin(9600);
+  // Serial.begin(9600);
 }
 
 
@@ -219,22 +211,40 @@ void loop()
       lcd.setCursor(0, 1);
       lcd.print("to meal");
 
-      lcd.noDisplay();
-      delay(500);
-      lcd.display();
-      delay(500);
+      for (int i =0; i < 2; i++)
+      {
+        lcd.noDisplay();
+        delay(500);
+        lcd.display();
+        delay(500);
+      }
 
-      flag = 0;
-      resetTime();
+      cur_hour = 0;
+      cur_minute = 0;
+      cur_second = 0;
+      count = 0;
 
     }
   }
 
-  else 
+  else if (flag == 6) 
   {
-    flag = 0;
+    flag = 1;
   }
 
   lcd.display();
   delay(1000);
+
+  // Serial.print("next_hour :");
+  // Serial.print(next_hour);
+  // Serial.print(" next_minute : ");
+  // Serial.print(next_minute);
+  // Serial.print(" next_second : ");
+  // Serial.print(next_second);
+  // Serial.print(" cur_hour :");
+  // Serial.print(cur_hour);
+  // Serial.print(" cur_minute : ");
+  // Serial.print(cur_minute);
+  // Serial.print(" cur_second : ");
+  // Serial.println(cur_second);
 }
