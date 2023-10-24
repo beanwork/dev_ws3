@@ -1,71 +1,111 @@
 #include <LiquidCrystal.h>
 
 LiquidCrystal lcd(12,11,5,4,3,2);
-int hour, minute, second, count =0;
+int cur_hour, cur_minute, cur_second, count =0;
 int next_hour, next_minute, next_second = 0;
 const int setTimepin = A0;
 int sensorValue = 0;
 int button = 13;
-int flag = 0;
+int button2 = 10;
+int flag, flag2 = 0;
 
 
-int returnTime(int second)
+int returnTime(int cur_second)
 {
-  if (second == 0) 
+  if (cur_second == 0) 
   {
     count += 1;
 
     if (count > 1)
     {
-      minute += 1;
+      cur_minute += 1;
     }
     
-    if (minute == 60)
+    if (cur_minute == 60)
     {
-      minute = 0;
-      hour += 1;
+      cur_minute = 0;
+      cur_hour += 1;
     }
 
   }
 
-  return hour,minute,second;
+  return cur_hour,cur_minute,cur_second;
 }
 
 
 int setNextHour(int value)
 {
-  next_hour = map(value, 0, 1023, 1, 8); 
+  next_hour = map(value, 0, 1000, 0, 8); 
   
   return next_hour;
 }
 
 
-// int setNextMinute(int)
-// {
-//   sensorValue = analogRead(setTimepin);
+int setNextMinute(int value)
+{
+  next_minute = map(value, 0, 1000, 0, 59);
+  if (next_minute == 60)
+  {
+    next_minute = 59;
+  }
   
-//   return next_minute;
-// }
+  return next_minute;
+}
 
-// int setNextSecond(int)
-// {
-//   sensorValue = analogRead(setTimepin);
-  
-//   return next_second;
-// }
+int setNextSecond(int)
+{
+  next_second = map(sensorValue, 0, 1000, 0, 59);
+
+  if (next_second == 60)
+  {
+    next_second = 59;
+  }
+
+  return next_second;
+}
 
 
-void flag_2()
+void flag_2(int sensorValue)
 {
   lcd.clear();
-  lcd.print("set Next Time :");
+  lcd.print("set Next Hour :");
   lcd.setCursor(0, 1);
 
-  sensorValue = analogRead(setTimepin);
+  
   next_hour = setNextHour(sensorValue);
 
   lcd.print(next_hour);
   lcd.print("H 0M 0S");
+}
+
+void flag_3(int sensorValue)
+{
+  lcd.clear();
+  lcd.print("set Next Minute :");
+  lcd.setCursor(0, 1);
+
+  next_minute = setNextMinute(sensorValue);
+  lcd.print(next_hour);
+  lcd.print("H ");
+  lcd.print(next_minute);
+  lcd.print("M 0S");
+}
+
+
+void flag_4(int sensorValue)
+{
+  lcd.clear();
+  lcd.print("set Next second");
+  lcd.setCursor(0, 1);
+
+  next_second = setNextSecond(sensorValue);
+
+  lcd.print(next_hour);
+  lcd.print("H ");
+  lcd.print(next_minute);
+  lcd.print("M ");
+  lcd.print(next_second);
+  lcd.print("S");
 }
 
 
@@ -74,6 +114,7 @@ void setup()
   // put your setup code here, to run once:
   lcd.begin(16,2);
   pinMode(button, INPUT);
+  pinMode(button2, INPUT);
   
   Serial.begin(9600);
 }
@@ -83,56 +124,96 @@ void loop()
 {
   int second = (millis()/1000)%60;
 
-  hour,minute,second = returnTime(second);
   bool setNextTime = digitalRead(button);
+  bool giveInstantly = digitalRead(button2); 
 
   if (setNextTime == HIGH)
   {
     flag += 1;
-
-    if (flag == 1)
-    {
-      lcd.print("Give Instantly?");
-      
-    }
-
-    else if (flag ==2) 
-    {
-      flag_2();
-    }
-    
   }
-  
 
-  // Serial.print("hour : ");
-  // Serial.print(hour);
+  if (giveInstantly == HIGH)
+  {
+    flag2 += 1;
+  }
 
-  // Serial.print(" minute : ");
-  // Serial.print(minute);
+  if (flag2 == 1)
+  {
+    lcd.clear();
+    lcd.print("It's time");
+    lcd.setCursor(0, 1);
+    lcd.print("to meal");
+  }
 
-  // Serial.print(" second : ");
-  // Serial.println(second);
-  
-  // lcd.clear();
-  // lcd.setCursor(0, 0);
-  // lcd.print("left Time is");
-  // lcd.setCursor(0, 1);
+  if (flag == 1)
+  {
+    lcd.clear();
+    lcd.print("Give Instantly?");
+  }
 
-  // lcd.print(hour);
-  // lcd.print("H ");
+  else if (flag == 2) 
+  {
+    sensorValue = analogRead(setTimepin);
+    flag_2(sensorValue);
+  }
 
-  // lcd.print(minute);
-  // lcd.print("M ");
+  else if (flag == 3)
+  {
+    sensorValue = analogRead(setTimepin);
+    flag_3(sensorValue);
+  }
 
-  // lcd.print(second);
-  // lcd.print("S ");
+  else if (flag == 4)
+  {
+    sensorValue = analogRead(setTimepin);
+    flag_4(sensorValue);
+  }
 
-  // sensorValue = analogRead(setTimepin);
-  // lcd.print(sensorValue);
-  // lcd.print('V');
-  
-  
-  delay(500);
+  else if (flag == 5)
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("left Time is");
+    lcd.setCursor(0, 1);
+
+    cur_hour, cur_minute, cur_second = returnTime(second);
+
+    int left_hour = next_hour - cur_hour;
+    int left_minute = next_minute - cur_minute;
+    int left_second = next_second - cur_second;
+
+    if (left_second < 0)
+    {
+      left_second = 60 + left_second;
+      left_minute = left_minute - 1;
+
+      if (left_minute < 0)
+      {
+        left_minute = 60 + left_minute;
+        left_hour = left_hour - 1;
+      }
+    }
+
+    lcd.print(left_hour);
+    lcd.print("H ");
+
+    lcd.print(left_minute);
+    lcd.print("M ");
+
+    lcd.print(left_second);
+    lcd.print("S ");
+
+    if ((left_hour == 0) && (left_minute == 0) && (left_second == 0))
+    {
+      flag2 = 1;
+    }
+  }
+
+  else 
+  {
+    flag = 0;
+  }
+
   lcd.display();
-  delay(500);
+  delay(1000);
 }
