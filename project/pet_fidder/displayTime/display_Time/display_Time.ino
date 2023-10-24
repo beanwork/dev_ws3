@@ -10,11 +10,12 @@ int button2 = 10;
 int flag, flag2 = 0;
 
 
-int returnTime(int cur_second)
+int returnTime()
 {
-  if (cur_second == 0) 
+  if (cur_second == 0 or cur_second == 60) 
   {
     count += 1;
+    cur_second = 0;
 
     if (count > 1)
     {
@@ -28,6 +29,8 @@ int returnTime(int cur_second)
     }
 
   }
+
+  cur_second += 1;
 
   return cur_hour,cur_minute,cur_second;
 }
@@ -122,8 +125,8 @@ void setup()
 
 void loop()
 {
-  int second = (millis()/1000)%60;
-
+  // int second = (millis()/1000)%60;
+  cur_hour, cur_minute, cur_second = returnTime();
   bool setNextTime = digitalRead(button);
   bool giveInstantly = digitalRead(button2); 
 
@@ -175,9 +178,7 @@ void loop()
     lcd.setCursor(0, 0);
     lcd.print("left Time is");
     lcd.setCursor(0, 1);
-
-    cur_hour, cur_minute, cur_second = returnTime(second);
-
+    
     int left_hour = next_hour - cur_hour;
     int left_minute = next_minute - cur_minute;
     int left_second = next_second - cur_second;
