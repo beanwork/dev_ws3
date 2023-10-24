@@ -68,6 +68,20 @@ int setNextSecond(int)
 }
 
 
+void flag_1()
+{
+  lcd.clear();
+  lcd.print("Give Instantly?");
+
+  if (flag2 == 1)
+  {
+    lcd.clear();
+    lcd.print("It's time");
+    lcd.setCursor(0, 1);
+    lcd.print("to meal");
+  } 
+}
+
 void flag_2(int sensorValue)
 {
   lcd.clear();
@@ -112,13 +126,69 @@ void flag_4(int sensorValue)
 }
 
 
+void flag_5()
+{
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("left Time is");
+  lcd.setCursor(0, 1);
+
+  cur_hour, cur_minute, cur_second = returnTime();
+  int left_hour = next_hour - cur_hour;
+  int left_minute = next_minute - cur_minute;
+  int left_second = next_second - cur_second;
+
+  if (left_second < 0)
+  {
+    left_second = 60 + left_second;
+    left_minute = left_minute - 1;
+
+    if (left_minute < 0)
+    {
+      left_minute = 60 + left_minute;
+      left_hour = left_hour - 1;
+    }
+  }
+
+  lcd.print(left_hour);
+  lcd.print("H ");
+
+  lcd.print(left_minute);
+  lcd.print("M ");
+
+  lcd.print(left_second);
+  lcd.print("S ");
+
+  if ((left_hour == 0) && (left_minute == 0) && (left_second == 0))
+  {
+    lcd.clear();
+    lcd.print("It's time");
+    lcd.setCursor(0, 1);
+    lcd.print("to meal");
+
+    for (int i =0; i < 2; i++)
+    {
+      lcd.noDisplay();
+      delay(500);
+      lcd.display();
+      delay(500);
+    }
+
+    cur_hour = 0;
+    cur_minute = 0;
+    cur_second = 0;
+    count = 0;
+
+  }
+}
+
 void setup()
 {
   lcd.begin(16,2);
   pinMode(button, INPUT);
   pinMode(button2, INPUT);
 
-  // Serial.begin(9600);
+  Serial.begin(9600);
   
 }
 
@@ -128,6 +198,8 @@ void loop()
   
   bool setNextTime = digitalRead(button);
   bool giveInstantly = digitalRead(button2); 
+
+  sensorValue = analogRead(setTimepin);
 
   if (setNextTime == HIGH)
   {
@@ -144,100 +216,59 @@ void loop()
     flag2 += 1;
   }
 
-  if (flag == 1)
+  // if (flag == 1)
+  // {
+  //   flag_1();
+  // }
+
+  // else if (flag == 2) 
+  // {
+  //   flag_2(sensorValue);
+  // }
+
+  // else if (flag == 3)
+  // { 
+  //   flag_3(sensorValue);
+  // }
+
+  // else if (flag == 4)
+  // { 
+  //   flag_4(sensorValue);
+  // }
+
+  // else if (flag == 5)
+  // {
+  //   flag_5();
+  // }
+
+  // else if (flag == 6) 
+  // {
+  //   flag = 1;
+  // }
+  switch (flag) 
   {
-    lcd.clear();
-    lcd.print("Give Instantly?");
-
-    if (flag2 == 1)
-    {
-      lcd.clear();
-      lcd.print("It's time");
-      lcd.setCursor(0, 1);
-      lcd.print("to meal");
-    }
-  }
-
-  else if (flag == 2) 
-  {
-    sensorValue = analogRead(setTimepin);
-    flag_2(sensorValue);
-  }
-
-  else if (flag == 3)
-  {
-    sensorValue = analogRead(setTimepin);
-    flag_3(sensorValue);
-  }
-
-  else if (flag == 4)
-  {
-    sensorValue = analogRead(setTimepin);
-    flag_4(sensorValue);
-  }
-
-  else if (flag == 5)
-  {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("left Time is");
-    lcd.setCursor(0, 1);
-
-    cur_hour, cur_minute, cur_second = returnTime();
-    int left_hour = next_hour - cur_hour;
-    int left_minute = next_minute - cur_minute;
-    int left_second = next_second - cur_second;
-
-    if (left_second < 0)
-    {
-      left_second = 60 + left_second;
-      left_minute = left_minute - 1;
-
-      if (left_minute < 0)
-      {
-        left_minute = 60 + left_minute;
-        left_hour = left_hour - 1;
-      }
-    }
-
-    lcd.print(left_hour);
-    lcd.print("H ");
-
-    lcd.print(left_minute);
-    lcd.print("M ");
-
-    lcd.print(left_second);
-    lcd.print("S ");
-
-    if ((left_hour == 0) && (left_minute == 0) && (left_second == 0))
-    {
-      lcd.clear();
-      lcd.print("It's time");
-      lcd.setCursor(0, 1);
-      lcd.print("to meal");
-
-      for (int i =0; i < 2; i++)
-      {
-        lcd.noDisplay();
-        delay(500);
-        lcd.display();
-        delay(500);
-      }
-
-      cur_hour = 0;
-      cur_minute = 0;
-      cur_second = 0;
-      count = 0;
-
-    }
-  }
-
-  else if (flag == 6) 
-  {
-    flag = 1;
+    case 1:
+        flag_1();
+        break;
+    case 2:
+        flag_2(sensorValue);
+        break;
+    case 3:
+        flag_3(sensorValue);
+        break;
+    case 4:
+        flag_4(sensorValue);
+        break;
+    case 5:
+        flag_5();
+        break;
+    case 6:
+        flag = 1;
+        break;
   }
 
   lcd.display();
   delay(1000);
+
 
 }
