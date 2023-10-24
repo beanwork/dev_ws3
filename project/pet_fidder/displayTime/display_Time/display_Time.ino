@@ -118,7 +118,7 @@ void setup()
   pinMode(button, INPUT);
   pinMode(button2, INPUT);
 
-  Serial.begin(9600);
+  // Serial.begin(9600);
   
 }
 
@@ -240,8 +240,4 @@ void loop()
   lcd.display();
   delay(1000);
 
-  Serial.print(" flag : ");
-  Serial.print(flag);
-  Serial.print(" flag2 : ");
-  Serial.println(flag2);
 }
