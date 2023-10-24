@@ -118,8 +118,9 @@ void setup()
   lcd.begin(16,2);
   pinMode(button, INPUT);
   pinMode(button2, INPUT);
+
+  Serial.begin(9600);
   
-  // Serial.begin(9600);
 }
 
 
@@ -132,6 +133,11 @@ void loop()
   if (setNextTime == HIGH)
   {
     flag += 1;
+    if ((flag == 2 ) && (flag2 == 1))
+    {
+      flag = 1;
+      flag2 = 0;
+    }
   }
 
   if (giveInstantly == HIGH)
@@ -139,18 +145,27 @@ void loop()
     flag2 += 1;
   }
 
-  if (flag2 == 1)
-  {
-    lcd.clear();
-    lcd.print("It's time");
-    lcd.setCursor(0, 1);
-    lcd.print("to meal");
-  }
+  // if (flag2 == 1)
+  // {
+  //   lcd.clear();
+  //   lcd.print("It's time");
+  //   lcd.setCursor(0, 1);
+  //   lcd.print("to meal");
+  //   flag, flag2 = 0;
+  // }
 
   if (flag == 1)
   {
     lcd.clear();
     lcd.print("Give Instantly?");
+
+    if (flag2 == 1)
+    {
+      lcd.clear();
+      lcd.print("It's time");
+      lcd.setCursor(0, 1);
+      lcd.print("to meal");
+    }
   }
 
   else if (flag == 2) 
@@ -235,16 +250,8 @@ void loop()
   lcd.display();
   delay(1000);
 
-  // Serial.print("next_hour :");
-  // Serial.print(next_hour);
-  // Serial.print(" next_minute : ");
-  // Serial.print(next_minute);
-  // Serial.print(" next_second : ");
-  // Serial.print(next_second);
-  // Serial.print(" cur_hour :");
-  // Serial.print(cur_hour);
-  // Serial.print(" cur_minute : ");
-  // Serial.print(cur_minute);
-  // Serial.print(" cur_second : ");
-  // Serial.println(cur_second);
+  Serial.print(" flag : ");
+  Serial.print(flag);
+  Serial.print(" flag2 : ");
+  Serial.println(flag2);
 }
