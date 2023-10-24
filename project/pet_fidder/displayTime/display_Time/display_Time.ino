@@ -114,7 +114,6 @@ void flag_4(int sensorValue)
 
 void setup()
 {
-  // put your setup code here, to run once:
   lcd.begin(16,2);
   pinMode(button, INPUT);
   pinMode(button2, INPUT);
@@ -144,15 +143,6 @@ void loop()
   {
     flag2 += 1;
   }
-
-  // if (flag2 == 1)
-  // {
-  //   lcd.clear();
-  //   lcd.print("It's time");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("to meal");
-  //   flag, flag2 = 0;
-  // }
 
   if (flag == 1)
   {
