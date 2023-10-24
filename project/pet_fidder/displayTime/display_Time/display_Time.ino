@@ -2,6 +2,7 @@
 
 LiquidCrystal lcd(12,11,5,4,3,2);
 int hour, minute, second, count =0;
+int next_hour, next_minute, next_second = 0;
 const int setTimepin = A0;
 int sensorValue = 0;
 int button = 13;
@@ -30,28 +31,46 @@ int returnTime(int second)
   return hour,minute,second;
 }
 
-int setNextHour(int)
+
+int setNextHour(int value)
 {
-  sensorValue = analogRead(setTimepin);
+  next_hour = map(value, 0, 1023, 1, 8); 
   
   return next_hour;
 }
 
-int setNextMinute(int)
-{
-  sensorValue = analogRead(setTimepin);
+
+// int setNextMinute(int)
+// {
+//   sensorValue = analogRead(setTimepin);
   
-  return next_minute;
+//   return next_minute;
+// }
+
+// int setNextSecond(int)
+// {
+//   sensorValue = analogRead(setTimepin);
+  
+//   return next_second;
+// }
+
+
+void flag_2()
+{
+  lcd.clear();
+  lcd.print("set Next Time :");
+  lcd.setCursor(0, 1);
+
+  sensorValue = analogRead(setTimepin);
+  next_hour = setNextHour(sensorValue);
+
+  lcd.print(next_hour);
+  lcd.print("H 0M 0S");
 }
 
-int setNextSecond(int)
-{
-  sensorValue = analogRead(setTimepin);
-  
-  return next_second;
-}
 
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   lcd.begin(16,2);
   pinMode(button, INPUT);
@@ -59,7 +78,9 @@ void setup() {
   Serial.begin(9600);
 }
 
-void loop() {
+
+void loop()
+{
   int second = (millis()/1000)%60;
 
   hour,minute,second = returnTime(second);
@@ -68,6 +89,7 @@ void loop() {
   if (setNextTime == HIGH)
   {
     flag += 1;
+
     if (flag == 1)
     {
       lcd.print("Give Instantly?");
@@ -76,8 +98,7 @@ void loop() {
 
     else if (flag ==2) 
     {
-      lcd.clear();
-      lcd.print("Set Next Time :");
+      flag_2();
     }
     
   }
