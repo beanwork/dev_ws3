@@ -216,35 +216,6 @@ void loop()
     flag2 += 1;
   }
 
-  // if (flag == 1)
-  // {
-  //   flag_1();
-  // }
-
-  // else if (flag == 2) 
-  // {
-  //   flag_2(sensorValue);
-  // }
-
-  // else if (flag == 3)
-  // { 
-  //   flag_3(sensorValue);
-  // }
-
-  // else if (flag == 4)
-  // { 
-  //   flag_4(sensorValue);
-  // }
-
-  // else if (flag == 5)
-  // {
-  //   flag_5();
-  // }
-
-  // else if (flag == 6) 
-  // {
-  //   flag = 1;
-  // }
   switch (flag) 
   {
     case 1:
