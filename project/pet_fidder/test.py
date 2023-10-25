@@ -22,11 +22,17 @@ class WindowClass(QMainWindow, from_class):
         self.giveInstantly.clicked.connect(self.GiveInstantly)
         self.setNextTime.clicked.connect(self.SetNextTime)
         '---------------next Time----------------------'
-        self.hour.setRange(int(0), int(8))
-        self.hour.setSingleStep(int(1))
-        self.hour.valueChanged.connect(self.setNextHour)
-        self.minute.valueChanged.connect(self.setNextMinute)
-        self.second.valueChanged.connect(self.setNextSecond)
+        self.hour.setRange(0, 8)
+        self.hour.setSingleStep(1)
+        # self.hour.valueChanged.connect(self.setNextHour)
+        
+        self.minute.setRange(0, 59)
+        self.minute.setSingleStep(1)
+        # self.minute.valueChanged.connect(self.setNextMinute)
+
+        self.second.setRange(0, 59)
+        self.second.setSingleStep(1)
+        # self.second.valueChanged.connect(self.setNextSecond)
         '-------------response---------------'
         self.serial.receive.connect(self.Recv)
         
@@ -35,12 +41,12 @@ class WindowClass(QMainWindow, from_class):
         text += "\n"
         self.conn.write(text.encode())
 
-
         #if self.conn.readable():
         #    res = self.conn.readline()
         #    self.textEdit.append(res.decode())
     
     def GiveInstantly(self):
+        
         retval = QMessageBox.question(self, 'question', 'Are you sure give instantly?',
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if retval == QMessageBox.Yes:
@@ -52,21 +58,40 @@ class WindowClass(QMainWindow, from_class):
         
     
     def SetNextTime(self):
-        text = "{0}H {1}M {2}S".format(self.hourValue, self.minuteValue, self.secondValue)
-
-        text += "\n"
-        self.conn.write(text.encode())
+        retval = QMessageBox.question(self, 'question', 'Are you sure set Next Time?',
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if retval == QMessageBox.Yes:
+            text = "{0}H {1}M {2}S".format(self.hour.value(), self.minute.value(), self.second.value())
+            text += "\n"
+            
+            self.conn.write(text.encode())
     
-    def setNextHour(self):
-        self.hourValue = self.hour.value()
-    def setNextMinute(self):
-        self.minuteValue = self.minute.value()
-    def setNextSecond(self):
-        self.secondValue = self.second.value()
+    # def setNextHour(self):
+    #     self.hourValue = self.hour.value()
+    # def setNextMinute(self):
+    #     self.minuteValue = self.minute.value()
+    # def setNextSecond(self):
+    #     self.secondValue = self.second.value()
         
 
     def Recv(self, message):
-        QMessageBox.about(self,'notice','meals is given to your pet successfully')
+
+        if message == "meal":
+            QMessageBox.information(self,'notice','meals is given to your pet successfully')
+        
+        else:
+            print(message)
+            hms = message.split(" ")
+            self.hourlabel.setText(hms[0])
+            self.minutelabel.setText(hms[1])
+            self.secondlabel.setText(hms[2])
+
+            if (hms[0] == '0') and (hms[1] == '0') and (hms[2] == '0'):
+                QMessageBox.information(self,'notice','meals is given to your pet successfully')
+
+
+
         # self.textEdit.append(message)
         
 
