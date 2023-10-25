@@ -1,6 +1,8 @@
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+#include <stdlib.h>
 
-LiquidCrystal lcd(12,11,5,4,3,2);
+LiquidCrystal_I2C lcd(0x27,16,2);
 int cur_hour, cur_minute, cur_second, count =0;
 int next_hour, next_minute, next_second = 0;
 const int setTimepin = A0;
@@ -152,6 +154,7 @@ void flag_5()
 
   lcd.print(left_hour);
   lcd.print("H ");
+  
 
   lcd.print(left_minute);
   lcd.print("M ");
@@ -161,18 +164,7 @@ void flag_5()
 
   if ((left_hour == 0) && (left_minute == 0) && (left_second == 0))
   {
-    lcd.clear();
-    lcd.print("It's time");
-    lcd.setCursor(0, 1);
-    lcd.print("to meal");
-
-    for (int i =0; i < 2; i++)
-    {
-      lcd.noDisplay();
-      delay(500);
-      lcd.display();
-      delay(500);
-    }
+    timeToMeal();
 
     cur_hour = 0;
     cur_minute = 0;
@@ -180,11 +172,37 @@ void flag_5()
     count = 0;
 
   }
+
+  Serial.print(left_hour);
+  Serial.print(" ");
+  Serial.print(left_minute);
+  Serial.print(" ");
+  Serial.println(left_second);
+  
+}
+
+
+void timeToMeal()
+{
+  lcd.clear();
+  lcd.print("It's time");
+  lcd.setCursor(0, 1);
+  lcd.print("to meal");
+
+  for (int i =0; i < 2; i++)
+  {
+    lcd.noDisplay();
+    delay(500);
+    lcd.display();
+    delay(500);
+  }
+
 }
 
 void setup()
 {
-  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
   pinMode(button, INPUT);
   pinMode(button2, INPUT);
 
@@ -195,7 +213,6 @@ void setup()
 
 void loop()
 {
-  
   bool setNextTime = digitalRead(button);
   bool giveInstantly = digitalRead(button2); 
 
@@ -237,9 +254,34 @@ void loop()
         flag = 1;
         break;
   }
+  
+  // Serial connect 
+  if (Serial.available() > 0)
+  {
+    String input = Serial.readStringUntil('\n');
+    if (input.equals("give instantly"))
+    {
+      Serial.println("meal");
 
+      timeToMeal();
+    }
+    else
+    {
+      next_hour = input.substring(0,1).toInt();
+      next_minute = input.substring(3,4).toInt();
+      next_second = input.substring(6,7).toInt();
+
+      flag = 5;
+      // left_hour, left_minute, left_second =  flag_5();
+
+      // Serial.print(left_hour);
+      // Serial.print(left_hour);
+      // Serial.print(left_hour);   
+    }
+  }
+
+  // Serial.print("falg : ");
+  // Serial.println(flag);
   lcd.display();
   delay(1000);
-
-
 }
