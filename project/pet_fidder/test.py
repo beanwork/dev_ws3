@@ -18,9 +18,10 @@ class WindowClass(QMainWindow, from_class):
         self.serial.start()
 
         # self.send.clicked.connect(self.Send)
-        '------------if instantly or set next Time button pressed -------------'
+        '------------button -------------'
         self.giveInstantly.clicked.connect(self.GiveInstantly)
         self.setNextTime.clicked.connect(self.SetNextTime)
+        self.reset.clicked.connect(self.Reset)
         '---------------next Time----------------------'
         self.hour.setRange(0, 8)
         self.hour.setSingleStep(1)
@@ -50,7 +51,7 @@ class WindowClass(QMainWindow, from_class):
         retval = QMessageBox.question(self, 'question', 'Are you sure give instantly?',
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if retval == QMessageBox.Yes:
-            text = "give instantly"
+            text = "right now"
             text += "\n"
             self.conn.write(text.encode())
         else:
@@ -62,10 +63,15 @@ class WindowClass(QMainWindow, from_class):
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         
         if retval == QMessageBox.Yes:
-            text = "{0}H {1}M {2}S".format(self.hour.value(), self.minute.value(), self.second.value())
+            text = "{0}H{1}M{2}S".format(self.hour.value(), self.minute.value(), self.second.value())
             text += "\n"
             
             self.conn.write(text.encode())
+    
+    def Reset(self):
+        text = "reset"
+        text += "\n"
+        self.conn.write(text.encode())
     
     # def setNextHour(self):
     #     self.hourValue = self.hour.value()
@@ -76,22 +82,21 @@ class WindowClass(QMainWindow, from_class):
         
 
     def Recv(self, message):
+        print(message)
+        
+        hms = message.split(",")
+        print(hms)
+        
+        self.hourlabel.setText(hms[0])
+        self.minutelabel.setText(hms[1])
+        self.secondlabel.setText(hms[2])
 
-        if message == "meal":
+        if (hms[0] == '0') and (hms[1] == '0') and (hms[2] == '0') and (not"reset" in hms):
             QMessageBox.information(self,'notice','meals is given to your pet successfully')
         
-        else:
-            print(message)
-            hms = message.split(" ")
-            self.hourlabel.setText(hms[0])
-            self.minutelabel.setText(hms[1])
-            self.secondlabel.setText(hms[2])
-
-            if (hms[0] == '0') and (hms[1] == '0') and (hms[2] == '0'):
-                QMessageBox.information(self,'notice','meals is given to your pet successfully')
-
-
-
+        if (hms[0] == '99') and (hms[1] == '99') and (hms[2] == '99'):
+            QMessageBox.warning(self,'warning','Please press reset button and do again')
+            
         # self.textEdit.append(message)
         
 

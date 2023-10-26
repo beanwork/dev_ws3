@@ -5,31 +5,27 @@
 LiquidCrystal_I2C lcd(0x27,16,2);
 int cur_hour, cur_minute, cur_second, count =0;
 int next_hour, next_minute, next_second = 0;
+int left_hour, left_minute, left_second = 0;
+
 const int setTimepin = A0;
 int sensorValue = 0;
 int button = 13;
 int button2 = 10;
-int flag, flag2 = 0;
+int flag, flag2, flag3 = 0;
 
 
 int returnTime()
 {
-  if (cur_second == 0 or cur_second == 60) 
-  {
-    count += 1;
+  if (cur_second == 60) 
+  {    
     cur_second = 0;
+    cur_minute += 1;
+  }
 
-    if (count > 1)
-    {
-      cur_minute += 1;
-    }
-    
-    if (cur_minute == 60)
-    {
-      cur_minute = 0;
-      cur_hour += 1;
-    }
-
+  if (cur_minute == 60)
+  {
+    cur_minute = 0;
+    cur_hour += 1;
   }
 
   cur_second += 1;
@@ -140,18 +136,19 @@ void flag_5()
   int left_minute = next_minute - cur_minute;
   int left_second = next_second - cur_second;
 
+
   if (left_second < 0)
   {
     left_second = 60 + left_second;
     left_minute = left_minute - 1;
-
-    if (left_minute < 0)
-    {
-      left_minute = 60 + left_minute;
-      left_hour = left_hour - 1;
-    }
   }
 
+  if (left_minute < 0)
+  {
+    left_minute = 60 + left_minute;
+    left_hour = left_hour - 1;
+  }
+  
   lcd.print(left_hour);
   lcd.print("H ");
   
@@ -174,10 +171,11 @@ void flag_5()
   }
 
   Serial.print(left_hour);
-  Serial.print(" ");
+  Serial.print(",");
   Serial.print(left_minute);
-  Serial.print(" ");
-  Serial.println(left_second);
+  Serial.print(",");
+  Serial.print(left_second);
+  Serial.println(",");
   
 }
 
@@ -196,7 +194,6 @@ void timeToMeal()
     lcd.display();
     delay(500);
   }
-
 }
 
 void setup()
@@ -207,7 +204,6 @@ void setup()
   pinMode(button2, INPUT);
 
   Serial.begin(9600);
-  
 }
 
 
@@ -259,22 +255,55 @@ void loop()
   if (Serial.available() > 0)
   {
     String input = Serial.readStringUntil('\n');
-    if (input.equals("give instantly"))
-    {
-      Serial.println("meal");
+    if (input.equals("right now"))
+    { 
+      flag = 0;  
 
-      timeToMeal();
+      cur_hour, cur_minute, cur_second= 0;
+      left_hour, left_minute, left_second = 0;
+
+      Serial.print(left_hour);
+      Serial.print(",");
+      Serial.print(left_minute);
+      Serial.print(",");
+      Serial.print(left_second);
+      Serial.print(",");
+      
+    }
+    else if (input.equals("reset"))
+    {
+      flag = 0;
+      flag3 = 0;
+      
+      cur_hour, cur_minute, cur_second= 0;
+      left_hour, left_minute, left_second = 0;
+
+      Serial.print(left_hour);
+      Serial.print(",");
+      Serial.print(left_minute);
+      Serial.print(",");
+      Serial.print(left_second);
+      Serial.print(",");
+      Serial.print("reset");
+      Serial.println(",");
     }
     else
     {
-      next_hour = input.substring(0,1).toInt();
-      next_minute = input.substring(3,4).toInt();
-      next_second = input.substring(6,7).toInt();
+      next_hour = input.substring(0,input.indexOf('H')).toInt();
+      next_minute = input.substring(input.indexOf('H') + 1, input.indexOf('M')).toInt();
+      next_second = input.substring(input.indexOf('M') + 1, input.indexOf('S')).toInt();
 
       flag = 5;
+      
+      flag3 += 1;
+      
       // left_hour, left_minute, left_second =  flag_5();
-
-      // Serial.print(left_hour);
+      if (flag3 > 1)
+      {
+        Serial.println("99,99,99,");
+      
+      }
+      
       // Serial.print(left_hour);
       // Serial.print(left_hour);   
     }
