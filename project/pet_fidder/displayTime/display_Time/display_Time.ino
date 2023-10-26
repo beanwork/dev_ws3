@@ -273,7 +273,7 @@ void loop()
     else if (input.equals("reset"))
     {
       flag = 0;
-      flag3 = 0;
+      // flag3 = 0;
       
       cur_hour, cur_minute, cur_second= 0;
       left_hour, left_minute, left_second = 0;
@@ -295,14 +295,14 @@ void loop()
 
       flag = 5;
       
-      flag3 += 1;
+      // flag3 += 1;
       
-      // left_hour, left_minute, left_second =  flag_5();
-      if (flag3 > 1)
-      {
-        Serial.println("99,99,99,");
+      // // left_hour, left_minute, left_second =  flag_5();
+      // if (flag3 > 1)
+      // {
+      //   Serial.println("99,99,99,");
       
-      }
+      // }
       
       // Serial.print(left_hour);
       // Serial.print(left_hour);   

@@ -17,6 +17,8 @@ class WindowClass(QMainWindow, from_class):
         self.serial = SerialManager(self.conn)
         self.serial.start()
 
+        self.count = 0
+
         # self.send.clicked.connect(self.Send)
         '------------button -------------'
         self.giveInstantly.clicked.connect(self.GiveInstantly)
@@ -37,10 +39,10 @@ class WindowClass(QMainWindow, from_class):
         '-------------response---------------'
         self.serial.receive.connect(self.Recv)
         
-    def Send(self):
-        text = self.lineEdit.text()
-        text += "\n"
-        self.conn.write(text.encode())
+    # def Send(self):
+    #     text = self.lineEdit.text()
+    #     text += "\n"
+    #     self.conn.write(text.encode())
 
         #if self.conn.readable():
         #    res = self.conn.readline()
@@ -59,16 +61,23 @@ class WindowClass(QMainWindow, from_class):
         
     
     def SetNextTime(self):
-        retval = QMessageBox.question(self, 'question', 'Are you sure set Next Time?',
-                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        
-        if retval == QMessageBox.Yes:
-            text = "{0}H{1}M{2}S".format(self.hour.value(), self.minute.value(), self.second.value())
-            text += "\n"
+        self.count += 1
+
+        if self.count == 1:
+            retval = QMessageBox.question(self, 'question', 'Are you sure set Next Time?',
+                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             
-            self.conn.write(text.encode())
+            if retval == QMessageBox.Yes:
+                text = "{0}H{1}M{2}S".format(self.hour.value(), self.minute.value(), self.second.value())
+                text += "\n"
+                
+                self.conn.write(text.encode())
+        else:
+            QMessageBox.warning(self,'warning','Please press reset button and do again')
     
     def Reset(self):
+        self.count = 0
+
         text = "reset"
         text += "\n"
         self.conn.write(text.encode())
@@ -94,8 +103,6 @@ class WindowClass(QMainWindow, from_class):
         if (hms[0] == '0') and (hms[1] == '0') and (hms[2] == '0') and (not"reset" in hms):
             QMessageBox.information(self,'notice','meals is given to your pet successfully')
         
-        if (hms[0] == '99') and (hms[1] == '99') and (hms[2] == '99'):
-            QMessageBox.warning(self,'warning','Please press reset button and do again')
             
         # self.textEdit.append(message)
         
