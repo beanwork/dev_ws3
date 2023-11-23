@@ -3,7 +3,7 @@ from ultralytics.utils.plotting import Annotator
 import numpy as np
 import cv2
 import supervision as sv
-model = YOLO("yolov8l.pt")
+model = YOLO("yolov8x.pt")
 
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
