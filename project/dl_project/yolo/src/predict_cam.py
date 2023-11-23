@@ -15,21 +15,18 @@ colors = [[np.random.randint(0, 255) for _ in range(3)] for _ in range(len(label
 while True:
   success, img = cap.read()
   results = model(img, stream=True)
-
+  
   for r in results:
+    detections = sv.Detections.from_yolov8(r)
+    detections = detections[detections.class_id == 67]
     annotator = Annotator(img)
     
-    boxes = r.boxes
-    
-    for box in boxes:
-      b = box.xyxy[0]
-      c = box.cls
-
-      if int(c) == 67:
-        color = colors[int(c)]
-        annotator.box_label(b, model.names[int(c)], color)
-  
-        print("class : ", int(c))
+    for detection in detections:
+      b = detection[0]
+      c = detection[2]
+     
+      color = colors[int(c)]
+      annotator.box_label(b, model.names[int(c)], color)
   
   img = annotator.result()
       
